@@ -1,0 +1,73 @@
+[package]
+name = "guardr"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Core dependencies
+reqwest = { version = "0.12", features = ["blocking", "json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+colored = "2"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4"] }
+anyhow = "1.0"
+thiserror = "1.0"
+
+# API server dependencies
+axum = { version = "0.7", features = ["tokio"] }
+axum-extra = { version = "0.9", features = ["typed-header"] }
+tokio = { version = "1", features = ["full"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace", "timeout", "limit"] }
+
+# Authentication & Security
+jsonwebtoken = "9.0"
+bcrypt = "0.15"
+argon2 = "0.5"
+rand = "0.8"
+
+# Database
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "sqlite", "chrono", "uuid"] }
+redis = { version = "0.24", features = ["tokio-comp"] }
+mongodb = "2.8"
+
+# Rate limiting & middleware
+tower_governor = "0.2"
+governor = "0.6"
+
+# Logging & monitoring
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-appender = "0.2"
+
+# Configuration
+config = "0.14"
+dotenvy = "0.15"
+
+# HTTP client
+hyper = "1.0"
+
+# Email validation
+validator = { version = "0.18", features = ["derive"] }
+
+# Encryption for sensitive data
+aes-gcm = "0.10"
+base64 = "0.21"
+
+# JSON Web Tokens
+hmac = "0.12"
+sha2 = "0.10"
+hex = "0.4"
+
+# Additional utilities
+futures = "0.3"
+
+
+[[bin]]
+name = "guardr"
+path = "src/main.rs"
+
+[[bin]]
+name = "guardr-api"
+path = "src/api_server.rs"

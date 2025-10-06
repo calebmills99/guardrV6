@@ -49,20 +49,20 @@ const Footer: React.FC = () => {
           <div className="col-span-2 md:col-span-2">
             <Link href="/" className="flex items-center space-x-2 group mb-4">
               <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-[0_0_25px_var(--glow-primary)] group-hover:scale-105 transition-transform duration-200">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-glow-primary group-hover:scale-105 transition-transform duration-200">
                   <Shield className="h-6 w-6 text-white" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-secondary-500 rounded-full shadow-[0_0_12px_rgba(255,40,193,0.6)]">
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-secondary-500 rounded-full shadow-glow-accent">
                   <Heart className="h-3 w-3 text-white absolute top-0.5 left-0.5" />
                 </div>
               </div>
               <div>
                 <span className="text-xl font-bold text-white">Guardr</span>
-                <div className="w-16 h-0.5 pride-gradient rounded-full shadow-[0_0_12px_rgba(255,255,255,0.35)]"></div>
+                <div className="w-16 h-0.5 pride-gradient rounded-full shadow-glow-neutral-sm"></div>
               </div>
             </Link>
 
-            <p className="text-white/70 text-sm mb-4 max-w-sm">
+            <p className="text-white/85 text-sm mb-4 max-w-sm">
               AI-powered digital safety for online dating. Built with love for the LGBTQ+ community and all safer daters.
             </p>
 
@@ -73,7 +73,7 @@ const Footer: React.FC = () => {
                   <Link
                     key={social.name}
                     href={social.href}
-                    className="text-white/50 hover:text-white transition-colors duration-200"
+                    className="text-white/70 hover:text-white transition-colors duration-200"
                     aria-label={social.name}
                   >
                     <Icon className="h-5 w-5" />
@@ -91,7 +91,7 @@ const Footer: React.FC = () => {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/65 hover:text-white transition-colors duration-200"
+                    className="text-sm text-white/85 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -108,7 +108,7 @@ const Footer: React.FC = () => {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/65 hover:text-white transition-colors duration-200"
+                    className="text-sm text-white/85 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -125,7 +125,7 @@ const Footer: React.FC = () => {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/65 hover:text-white transition-colors duration-200"
+                    className="text-sm text-white/85 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -142,7 +142,7 @@ const Footer: React.FC = () => {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/65 hover:text-white transition-colors duration-200"
+                    className="text-sm text-white/85 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -156,26 +156,26 @@ const Footer: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center space-x-2">
-              <p className="text-sm text-white/70">
+              <p className="text-sm text-white/85">
                 © {currentYear} Guardr. Built with
               </p>
               <Heart className="h-4 w-4 text-pride-red" />
-              <p className="text-sm text-white/70">
+              <p className="text-sm text-white/85">
                 for safer dating.
               </p>
             </div>
 
             <div className="flex items-center space-x-6">
-              <p className="text-xs text-white/50">
+              <p className="text-xs text-white/75">
                 69% harassment rate represents real LGBTQ+ dating dangers
               </p>
-              <div className="w-16 h-1 pride-gradient rounded-full opacity-80 shadow-[0_0_15px_rgba(255,255,255,0.35)]"></div>
+              <div className="w-16 h-1 pride-gradient rounded-full opacity-80 shadow-glow-neutral"></div>
             </div>
           </div>
 
           <div className="mt-4 text-center">
-            <p className="text-xs text-white/50">
-              "You are an adult. You decide." - Empowering safer choices in digital dating.
+            <p className="text-xs text-white/75">
+              &ldquo;You are an adult. You decide.&rdquo; - Empowering safer choices in digital dating.
             </p>
           </div>
         </div>

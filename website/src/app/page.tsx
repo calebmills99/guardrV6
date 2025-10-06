@@ -1,22 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { 
-  Shield, 
-  Search, 
-  Lock, 
-  Heart, 
-  Users, 
-  Zap, 
+import {
+  Shield,
+  Search,
+  Heart,
+  Users,
   ArrowRight,
   CheckCircle,
   Star,
   ChevronRight,
   AlertTriangle,
   Eye,
-  MessageSquare,
   Database,
   Smartphone
 } from 'lucide-react';
@@ -27,12 +22,29 @@ import Input from '@/components/ui/Input';
 import Badge from '@/components/ui/Badge';
 import { cn } from '@/lib/utils';
 
+type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH';
+
+type SafetyTip = {
+  category: string;
+  message: string;
+};
+
+type DemoResult = {
+  name?: string;
+  risk_level?: RiskLevel;
+  risk_score?: number;
+  person_verification?: string;
+  recommendations?: string[];
+  safety_tips?: SafetyTip[];
+  error?: string;
+};
+
 export default function Home() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [demoName, setDemoName] = useState('');
   const [demoLocation, setDemoLocation] = useState('');
-  const [demoResults, setDemoResults] = useState<any>(null);
+  const [demoResults, setDemoResults] = useState<DemoResult | null>(null);
   const [demoLoading, setDemoLoading] = useState(false);
 
   const features = [
@@ -169,7 +181,7 @@ export default function Home() {
         })
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as DemoResult;
       setDemoResults(data);
     } catch (error) {
       console.error('Demo search failed:', error);
@@ -182,24 +194,24 @@ export default function Home() {
   return (
     <div className="min-h-screen text-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-24 lg:py-32 bg-gradient-to-br from-[#1f0b32] via-[#140922] to-[#1f0f34]">
+      <section className="relative overflow-hidden py-24 lg:py-32 bg-hero-night">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-grid-pattern opacity-40"></div>
-        <div className="absolute -top-20 -left-10 w-96 h-96 rounded-full bg-primary-500/40 blur-[180px]"></div>
-        <div className="absolute top-40 -right-16 w-[520px] h-[520px] rounded-full bg-secondary-500/35 blur-[200px]"></div>
+        <div className="absolute -top-20 -left-10 w-96 h-96 rounded-full bg-primary-500/40 blur-hero"></div>
+        <div className="absolute top-40 -right-16 w-[520px] h-[520px] rounded-full bg-secondary-500/35 blur-orb"></div>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
             {/* Pride flag accent */}
-            <div className="w-28 h-1 pride-gradient mx-auto mb-8 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.35)]"></div>
+            <div className="w-28 h-1 pride-gradient mx-auto mb-8 rounded-full shadow-glow-neutral"></div>
 
             <h1 className="text-5xl lg:text-7xl font-bold mb-8 leading-tight">
               <span className="gradient-text">2FA for your</span>
               <br />
-              <span className="text-secondary-300 drop-shadow-[0_0_18px_rgba(255,72,206,0.5)]">❤️</span> heart
+              <span className="text-secondary-300 drop-shadow-pink-glow">❤️</span> heart
             </h1>
 
-            <p className="text-xl lg:text-2xl text-white/75 mb-12 max-w-3xl mx-auto">
+            <p className="text-xl lg:text-2xl text-white/85 mb-12 max-w-3xl mx-auto">
               AI-powered digital safety for online dating. Making connections safer for the LGBTQ+ community and all smart daters.
             </p>
 
@@ -222,7 +234,7 @@ export default function Home() {
             </div>
 
             {/* Trust indicators */}
-            <div className="flex flex-wrap justify-center gap-6 mb-16 text-sm text-white/60">
+            <div className="flex flex-wrap justify-center gap-6 mb-16 text-sm text-white/80">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-emerald-300" />
                 <span>1,000+ safer daters</span>
@@ -257,7 +269,7 @@ export default function Home() {
             <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-white">
               Try Guardr Right Now
             </h2>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+            <p className="text-xl text-white/85 max-w-3xl mx-auto">
               Enter a name to verify. Our AI scans 40+ databases and provides a comprehensive safety assessment in ~2 minutes.
             </p>
           </div>
@@ -319,13 +331,13 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                       <div className="rounded-lg p-4 bg-white/5 border border-white/10">
                         <div className="text-2xl font-bold text-primary-100">{demoResults.risk_score}/100</div>
-                        <p className="text-white/60">Risk Score</p>
+                        <p className="text-white/80">Risk Score</p>
                       </div>
                       <div className="rounded-lg p-4 bg-white/5 border border-white/10">
                         <div className="text-2xl font-bold">
                           {demoResults.risk_level === 'HIGH' ? '🔴' : demoResults.risk_level === 'MEDIUM' ? '🟡' : '🟢'}
                         </div>
-                        <p className="text-white/60">Safety Status</p>
+                        <p className="text-white/80">Safety Status</p>
                       </div>
                     </div>
 
@@ -333,7 +345,7 @@ export default function Home() {
                       <div className="mb-6">
                         <h4 className="font-semibold mb-3 text-white">Verification Report:</h4>
                         <div className="rounded p-4 bg-white/5 border border-white/10">
-                          <p className="text-sm text-white/70 whitespace-pre-wrap">{demoResults.person_verification}</p>
+                          <p className="text-sm text-white/85 whitespace-pre-wrap">{demoResults.person_verification}</p>
                         </div>
                       </div>
                     )}
@@ -343,7 +355,7 @@ export default function Home() {
                         <h4 className="font-semibold mb-3 text-white">Safety Recommendations:</h4>
                         <div className="space-y-2">
                           {demoResults.recommendations.map((rec: string, index: number) => (
-                            <div key={index} className="flex items-start gap-2 text-sm text-white/70">
+                            <div key={index} className="flex items-start gap-2 text-sm text-white/85">
                               <span className="text-primary-200">•</span>
                               <span>{rec}</span>
                             </div>
@@ -356,8 +368,8 @@ export default function Home() {
                       <div className="mt-4 p-4 rounded bg-primary-500/10 border border-primary-400/30">
                         <h4 className="font-semibold text-primary-100 mb-2">💡 Safety Tips</h4>
                         <div className="space-y-2">
-                          {demoResults.safety_tips.slice(0, 3).map((tip: any, index: number) => (
-                            <p key={index} className="text-primary-50/80 text-sm">
+                          {demoResults.safety_tips.slice(0, 3).map((tip, index) => (
+                            <p key={`${tip.category}-${index}`} className="text-primary-50/90 text-sm">
                               <span className="font-semibold text-white">{tip.category}:</span> {tip.message}
                             </p>
                           ))}
@@ -378,19 +390,19 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="text-4xl font-bold text-primary-100 mb-2">69%</div>
-              <p className="text-white/60">LGBTQ+ harassment rate</p>
+            <p className="text-white/80">LGBTQ+ harassment rate</p>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-secondary-100 mb-2">$6.99</div>
-              <p className="text-white/60">Monthly protection</p>
+            <p className="text-white/80">Monthly protection</p>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-accent-100 mb-2">99.2%</div>
-              <p className="text-white/60">AI accuracy rate</p>
+            <p className="text-white/80">AI accuracy rate</p>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-orange-200 mb-2">&lt;5s</div>
-              <p className="text-white/60">Risk assessment time</p>
+            <p className="text-white/80">Risk assessment time</p>
             </div>
           </div>
         </div>
@@ -406,7 +418,7 @@ export default function Home() {
             <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-white">
               Comprehensive Safety Tools
             </h2>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+            <p className="text-xl text-white/85 max-w-3xl mx-auto">
               Advanced AI protection designed for modern dating, built with privacy and LGBTQ+ safety as core principles.
             </p>
           </div>
@@ -419,7 +431,7 @@ export default function Home() {
                   <div className="mb-6">
                     <div
                       className={cn(
-                        'inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br text-white shadow-[0_0_35px_rgba(255,255,255,0.15)] mb-4',
+                        'inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br text-white shadow-feature-icon mb-4',
                         feature.iconGlow,
                         feature.iconColor
                       )}
@@ -433,7 +445,7 @@ export default function Home() {
                   <h3 className="text-xl font-semibold mb-3 text-white">
                     {feature.title}
                   </h3>
-                  <p className="text-white/65">
+                  <p className="text-white/85">
                     {feature.description}
                   </p>
                 </Card>
@@ -450,7 +462,7 @@ export default function Home() {
             <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
               How Guardr Works
             </h2>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+            <p className="text-xl text-white/85 max-w-3xl mx-auto">
               Simple, secure, and designed to fit seamlessly into your dating routine.
             </p>
           </div>
@@ -462,7 +474,7 @@ export default function Home() {
                 return (
                   <div key={index} className="flex items-start space-x-4">
                     <div className="flex-shrink-0">
-                      <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full font-bold text-lg shadow-[0_0_25px_var(--glow-primary)]">
+                      <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full font-bold text-lg shadow-glow-primary">
                         {step.number}
                       </div>
                     </div>
@@ -473,7 +485,7 @@ export default function Home() {
                           {step.title}
                         </h3>
                       </div>
-                      <p className="text-white/65">
+                      <p className="text-white/85">
                         {step.description}
                       </p>
                     </div>
@@ -485,13 +497,13 @@ export default function Home() {
             <div className="lg:pl-8">
               <Card className="p-8 bg-gradient-to-br from-[color:var(--surface-200)]/80 to-[color:var(--surface-400)]/80">
                 <div className="text-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_45px_var(--glow-primary)]">
+                  <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow-primary-lg">
                     <Shield className="h-12 w-12 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-4">
                     Ready to get started?
                   </h3>
-                  <p className="text-white/70 mb-6">
+                  <p className="text-white/85 mb-6">
                     Join thousands of users who are already dating more safely with Guardr.
                   </p>
                   <Button size="lg" fullWidth>
@@ -511,8 +523,8 @@ export default function Home() {
             <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
               What Our Community Says
             </h2>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
-              Real stories from real users who've found safety and confidence with Guardr.
+            <p className="text-xl text-white/85 max-w-3xl mx-auto">
+              Real stories from real users who&rsquo;ve found safety and confidence with Guardr.
             </p>
           </div>
 
@@ -531,8 +543,8 @@ export default function Home() {
                     </Badge>
                   )}
                 </div>
-                <blockquote className="text-white/70 mb-6">
-                  "{testimonial.content}"
+                <blockquote className="text-white/85 mb-6">
+                  &ldquo;{testimonial.content}&rdquo;
                 </blockquote>
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-full flex items-center justify-center mr-4">
@@ -544,7 +556,7 @@ export default function Home() {
                     <div className="font-semibold text-white">
                       {testimonial.name}
                     </div>
-                    <div className="text-sm text-white/60">
+                    <div className="text-sm text-white/80">
                       {testimonial.role}
                     </div>
                   </div>
@@ -556,10 +568,10 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 lg:py-32 bg-gradient-to-br from-[#1b0f33] via-[#34145a] to-[#ff28c1] text-white relative overflow-hidden">
+      <section className="py-20 lg:py-32 bg-cta-flare text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-40 bg-grid-pattern" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="w-32 h-1 pride-gradient mx-auto mb-8 rounded-full shadow-[0_0_25px_rgba(255,255,255,0.45)]"></div>
+          <div className="w-32 h-1 pride-gradient mx-auto mb-8 rounded-full shadow-glow-neutral-strong"></div>
 
           <h2 className="text-4xl lg:text-5xl font-bold mb-6">
             Ready to date more safely?
@@ -591,12 +603,12 @@ export default function Home() {
                 Start Protecting ($6.99/mo)
               </Button>
             </div>
-            <p className="text-sm opacity-75 mt-4">
+            <p className="text-sm text-white/80 mt-4">
               We respect your privacy and will never share your information.
             </p>
           </form>
 
-          <div className="mt-12 flex justify-center items-center flex-wrap gap-8 text-sm opacity-80">
+          <div className="mt-12 flex justify-center items-center flex-wrap gap-8 text-sm text-white/80">
             <div className="flex items-center">
               <CheckCircle className="h-4 w-4 mr-2 text-secondary-200" />
               Instant setup

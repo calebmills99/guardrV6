@@ -30,12 +30,12 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
 
     const variantClasses = {
       default:
-        'bg-[color:var(--surface-200)]/90 text-white shadow-[0_25px_60px_rgba(8,3,20,0.55)]',
-      glass: 'glass text-white shadow-[0_35px_80px_rgba(10,4,30,0.55)]',
+        'bg-[color:var(--surface-200)]/90 text-white shadow-card-base',
+      glass: 'glass text-white shadow-card-glass',
       bordered:
-        'bg-[color:var(--surface-100)]/85 text-white border border-white/10 shadow-[0_15px_45px_rgba(6,2,18,0.4)]',
+        'bg-[color:var(--surface-100)]/85 text-white border border-white/10 shadow-card-bordered',
       elevated:
-        'bg-[color:var(--surface-300)]/95 text-white shadow-[0_40px_90px_rgba(12,4,28,0.6)]',
+        'bg-[color:var(--surface-300)]/95 text-white shadow-card-elevated',
     };
 
     const paddingClasses = {

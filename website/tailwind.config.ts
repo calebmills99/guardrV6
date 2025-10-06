@@ -17,6 +17,13 @@ const config: Config = {
           300: '#20163b',
           400: '#2a1f4c',
         },
+        night: {
+          600: '#34145a',
+          700: '#1b0f33',
+          800: '#1f0f34',
+          900: '#1f0b32',
+          950: '#140922',
+        },
         // Electric queer nightlife inspired palette
         primary: {
           50: '#f5edff',
@@ -85,6 +92,35 @@ const config: Config = {
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         display: ['Cal Sans', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
+      backgroundImage: {
+        'hero-night': 'linear-gradient(135deg, #1f0b32 0%, #140922 48%, #1f0f34 100%)',
+        'cta-flare': 'linear-gradient(135deg, #1b0f33 0%, #34145a 60%, #ff28c1 100%)',
+      },
+      blur: {
+        hero: '180px',
+        orb: '200px',
+      },
+      boxShadow: {
+        'glow-primary': '0 0 25px var(--glow-primary)',
+        'glow-primary-lg': '0 0 45px var(--glow-primary)',
+        'glow-secondary': '0 0 25px var(--glow-secondary)',
+        'glow-neutral': '0 0 20px rgba(255, 255, 255, 0.35)',
+        'glow-neutral-strong': '0 0 25px rgba(255, 255, 255, 0.45)',
+        'glow-accent': '0 0 12px rgba(255, 40, 193, 0.6)',
+        'glow-neutral-sm': '0 0 12px rgba(255, 255, 255, 0.35)',
+        'feature-icon': '0 0 35px rgba(255, 255, 255, 0.15)',
+        'card-base': '0 25px 60px rgba(8, 3, 20, 0.55)',
+        'card-glass': '0 35px 80px rgba(10, 4, 30, 0.55)',
+        'card-bordered': '0 15px 45px rgba(6, 2, 18, 0.4)',
+        'card-elevated': '0 40px 90px rgba(12, 4, 28, 0.6)',
+        'safety-high': '0 0 30px rgba(16, 185, 129, 0.45)',
+        'safety-medium': '0 0 30px rgba(245, 158, 11, 0.45)',
+        'safety-elevated': '0 0 30px rgba(249, 115, 22, 0.45)',
+        'safety-critical': '0 0 30px rgba(239, 68, 68, 0.45)',
+      },
+      dropShadow: {
+        'pink-glow': '0 0 18px rgba(255, 72, 206, 0.5)',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',

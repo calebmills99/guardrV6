@@ -27,16 +27,16 @@ const Header: React.FC = () => {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-[0_0_25px_var(--glow-primary)] group-hover:scale-105 transition-transform duration-200">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-glow-primary group-hover:scale-105 transition-transform duration-200">
                 <Shield className="h-6 w-6 text-white" />
               </div>
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-secondary-500 rounded-full shadow-[0_0_12px_rgba(255,40,193,0.6)]">
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-secondary-500 rounded-full shadow-glow-accent">
                 <Heart className="h-3 w-3 text-white absolute top-0.5 left-0.5" />
               </div>
             </div>
             <div className="hidden sm:block">
               <span className="text-xl font-bold text-white">Guardr</span>
-              <div className="w-16 h-0.5 pride-gradient rounded-full shadow-[0_0_12px_rgba(255,255,255,0.35)]"></div>
+              <div className="w-16 h-0.5 pride-gradient rounded-full shadow-glow-neutral-sm"></div>
             </div>
           </Link>
 
@@ -47,10 +47,10 @@ const Header: React.FC = () => {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'text-sm font-medium transition-colors duration-200 text-white/70 hover:text-white',
+                  'text-sm font-medium transition-colors duration-200 text-white/85 hover:text-white',
                   isActive(item.href)
                     ? 'text-white border-b-2 border-secondary-400 pb-4'
-                    : 'text-white/70'
+                    : 'text-white/85'
                 )}
               >
                 {item.name}
@@ -62,7 +62,7 @@ const Header: React.FC = () => {
           <div className="hidden md:flex items-center space-x-4">
             <Link
               href="/contact"
-              className="text-sm font-medium text-white/70 hover:text-white transition-colors duration-200"
+              className="text-sm font-medium text-white/85 hover:text-white transition-colors duration-200"
             >
               Contact
             </Link>
@@ -97,7 +97,7 @@ const Header: React.FC = () => {
                   'block px-4 py-2 text-base font-medium rounded-md transition-colors duration-200',
                   isActive(item.href)
                     ? 'text-white bg-white/10'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                    : 'text-white/85 hover:text-white hover:bg-white/10'
                 )}
                 onClick={() => setIsOpen(false)}
               >
@@ -107,7 +107,7 @@ const Header: React.FC = () => {
             <div className="px-4 pt-4 border-t border-white/10 space-y-2">
               <Link
                 href="/contact"
-                className="block px-4 py-2 text-base font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors duration-200"
+                className="block px-4 py-2 text-base font-medium text-white/85 hover:text-white hover:bg-white/10 rounded-md transition-colors duration-200"
                 onClick={() => setIsOpen(false)}
               >
                 Contact

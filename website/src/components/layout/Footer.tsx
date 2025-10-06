@@ -41,7 +41,7 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-gray-50 border-t border-gray-200">
+    <footer className="border-t border-white/10 bg-[color:var(--surface-200)]/85 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Main Footer Content */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
@@ -49,23 +49,23 @@ const Footer: React.FC = () => {
           <div className="col-span-2 md:col-span-2">
             <Link href="/" className="flex items-center space-x-2 group mb-4">
               <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-[0_0_25px_var(--glow-primary)] group-hover:scale-105 transition-transform duration-200">
                   <Shield className="h-6 w-6 text-white" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-pride-red rounded-full">
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-secondary-500 rounded-full shadow-[0_0_12px_rgba(255,40,193,0.6)]">
                   <Heart className="h-3 w-3 text-white absolute top-0.5 left-0.5" />
                 </div>
               </div>
               <div>
-                <span className="text-xl font-bold text-gray-900">Guardr</span>
-                <div className="w-16 h-0.5 pride-gradient rounded-full"></div>
+                <span className="text-xl font-bold text-white">Guardr</span>
+                <div className="w-16 h-0.5 pride-gradient rounded-full shadow-[0_0_12px_rgba(255,255,255,0.35)]"></div>
               </div>
             </Link>
-            
-            <p className="text-gray-600 text-sm mb-4 max-w-sm">
+
+            <p className="text-white/70 text-sm mb-4 max-w-sm">
               AI-powered digital safety for online dating. Built with love for the LGBTQ+ community and all safer daters.
             </p>
-            
+
             <div className="flex space-x-4">
               {socialLinks.map((social) => {
                 const Icon = social.icon;
@@ -73,7 +73,7 @@ const Footer: React.FC = () => {
                   <Link
                     key={social.name}
                     href={social.href}
-                    className="text-gray-400 hover:text-primary-600 transition-colors duration-200"
+                    className="text-white/50 hover:text-white transition-colors duration-200"
                     aria-label={social.name}
                   >
                     <Icon className="h-5 w-5" />
@@ -85,13 +85,13 @@ const Footer: React.FC = () => {
 
           {/* Product Links */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">Product</h3>
+            <h3 className="text-sm font-semibold text-white mb-4">Product</h3>
             <ul className="space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 hover:text-primary-600 transition-colors duration-200"
+                    className="text-sm text-white/65 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -102,13 +102,13 @@ const Footer: React.FC = () => {
 
           {/* Company Links */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">Company</h3>
+            <h3 className="text-sm font-semibold text-white mb-4">Company</h3>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 hover:text-primary-600 transition-colors duration-200"
+                    className="text-sm text-white/65 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -119,13 +119,13 @@ const Footer: React.FC = () => {
 
           {/* Legal Links */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">Legal</h3>
+            <h3 className="text-sm font-semibold text-white mb-4">Legal</h3>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 hover:text-primary-600 transition-colors duration-200"
+                    className="text-sm text-white/65 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -136,13 +136,13 @@ const Footer: React.FC = () => {
 
           {/* Support Links */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">Support</h3>
+            <h3 className="text-sm font-semibold text-white mb-4">Support</h3>
             <ul className="space-y-3">
               {footerLinks.support.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 hover:text-primary-600 transition-colors duration-200"
+                    className="text-sm text-white/65 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -153,28 +153,28 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-gray-200">
+        <div className="mt-12 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center space-x-2">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-white/70">
                 © {currentYear} Guardr. Built with
               </p>
               <Heart className="h-4 w-4 text-pride-red" />
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-white/70">
                 for safer dating.
               </p>
             </div>
-            
+
             <div className="flex items-center space-x-6">
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-white/50">
                 69% harassment rate represents real LGBTQ+ dating dangers
               </p>
-              <div className="w-16 h-1 pride-gradient rounded-full opacity-60"></div>
+              <div className="w-16 h-1 pride-gradient rounded-full opacity-80 shadow-[0_0_15px_rgba(255,255,255,0.35)]"></div>
             </div>
           </div>
-          
+
           <div className="mt-4 text-center">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-white/50">
               "You are an adult. You decide." - Empowering safer choices in digital dating.
             </p>
           </div>

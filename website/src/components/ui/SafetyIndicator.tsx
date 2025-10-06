@@ -24,34 +24,34 @@ const SafetyIndicator: React.FC<SafetyIndicatorProps> = ({
     high: {
       icon: CheckCircle,
       label: 'High Safety',
-      color: 'text-green-600',
-      bgColor: 'bg-green-100',
-      borderColor: 'border-green-300',
-      pulseColor: 'bg-green-400',
+      textColor: 'text-emerald-200',
+      glow: 'shadow-[0_0_30px_rgba(16,185,129,0.45)]',
+      bgColor: 'bg-emerald-500/10',
+      borderColor: 'border-emerald-300/40',
     },
     medium: {
       icon: Shield,
-      label: 'Medium Safety', 
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-100',
-      borderColor: 'border-yellow-300',
-      pulseColor: 'bg-yellow-400',
+      label: 'Medium Safety',
+      textColor: 'text-warning-100',
+      glow: 'shadow-[0_0_30px_rgba(245,158,11,0.45)]',
+      bgColor: 'bg-warning-500/10',
+      borderColor: 'border-warning-500/40',
     },
     low: {
       icon: AlertTriangle,
       label: 'Low Safety',
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100',
-      borderColor: 'border-orange-300',
-      pulseColor: 'bg-orange-400',
+      textColor: 'text-orange-200',
+      glow: 'shadow-[0_0_30px_rgba(249,115,22,0.45)]',
+      bgColor: 'bg-orange-500/10',
+      borderColor: 'border-orange-400/40',
     },
     danger: {
       icon: XCircle,
       label: 'High Risk',
-      color: 'text-red-600',
-      bgColor: 'bg-red-100',
-      borderColor: 'border-red-300',
-      pulseColor: 'bg-red-400',
+      textColor: 'text-danger-100',
+      glow: 'shadow-[0_0_30px_rgba(239,68,68,0.45)]',
+      bgColor: 'bg-danger-500/10',
+      borderColor: 'border-danger-500/40',
     },
   };
 
@@ -83,37 +83,28 @@ const SafetyIndicator: React.FC<SafetyIndicatorProps> = ({
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-2 rounded-full border transition-all duration-200',
+        'inline-flex items-center gap-2 rounded-full border transition-all duration-200 relative overflow-hidden backdrop-blur-lg',
+        'bg-gradient-to-r from-white/5 via-transparent to-white/5',
         currentConfig.bgColor,
         currentConfig.borderColor,
+        currentConfig.glow,
         currentSize.container,
-        'relative overflow-hidden',
         className
       )}
     >
-      {/* Pulse animation background */}
-      <div
-        className={cn(
-          'absolute inset-0 rounded-full opacity-20 safety-pulse',
-          currentConfig.pulseColor
-        )}
-      />
-      
-      {/* Content */}
+      <div className="absolute inset-0 opacity-30 mix-blend-screen bg-white/5" />
+
       <div className="relative flex items-center gap-2">
-        <Icon
-          size={currentSize.icon}
-          className={cn(currentConfig.color)}
-        />
-        
+        <Icon size={currentSize.icon} className={cn(currentConfig.textColor)} />
+
         {showLabel && (
-          <span className={cn(currentConfig.color, currentSize.text, 'font-medium')}>
+          <span className={cn(currentConfig.textColor, currentSize.text, 'font-semibold tracking-wide')}>
             {currentConfig.label}
           </span>
         )}
-        
+
         {showScore && score !== undefined && (
-          <span className={cn(currentConfig.color, currentSize.score)}>
+          <span className={cn(currentConfig.textColor, currentSize.score)}>
             {score}%
           </span>
         )}

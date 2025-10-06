@@ -32,7 +32,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const baseClasses = cn(
       'inline-flex items-center justify-center gap-2 rounded-lg font-medium',
-      'transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2',
+      'transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-200/60',
       'disabled:opacity-50 disabled:cursor-not-allowed',
       'btn-hover-lift',
       {
@@ -42,11 +42,16 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     );
 
     const variantClasses = {
-      primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 active:bg-primary-800',
-      secondary: 'bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500 active:bg-secondary-800',
-      outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-primary-500 active:bg-gray-100',
-      ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-primary-500 active:bg-gray-200',
-      danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 active:bg-red-800',
+      primary:
+        'bg-primary-500 text-white shadow-glow-primary hover:bg-primary-400 active:bg-primary-600',
+      secondary:
+        'bg-secondary-500 text-white shadow-glow-secondary hover:bg-secondary-400 active:bg-secondary-600',
+      outline:
+        'border border-white/30 bg-transparent text-white hover:bg-white/10 active:bg-white/15',
+      ghost:
+        'text-white/80 hover:bg-white/10 active:bg-white/15',
+      danger:
+        'bg-danger-500 text-white hover:bg-danger-700 active:bg-danger-700/90',
     };
 
     const sizeClasses = {

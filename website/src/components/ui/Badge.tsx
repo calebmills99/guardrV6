@@ -17,12 +17,12 @@ const Badge: React.FC<BadgeProps> = ({
   ...props
 }) => {
   const variantClasses = {
-    default: 'bg-gray-100 text-gray-800',
-    primary: 'bg-primary-100 text-primary-800',
-    secondary: 'bg-secondary-100 text-secondary-800',
-    success: 'bg-green-100 text-green-800',
-    warning: 'bg-yellow-100 text-yellow-800',
-    danger: 'bg-red-100 text-red-800',
+    default: 'bg-white/10 text-white/80 border-white/15',
+    primary: 'bg-primary-500/20 text-primary-100 border-primary-400/30',
+    secondary: 'bg-secondary-500/20 text-secondary-100 border-secondary-400/30',
+    success: 'bg-success-500/15 text-success-100 border-success-500/40',
+    warning: 'bg-warning-500/15 text-warning-100 border-warning-500/40',
+    danger: 'bg-danger-500/15 text-danger-100 border-danger-500/40',
   };
 
   const sizeClasses = {
@@ -34,7 +34,7 @@ const Badge: React.FC<BadgeProps> = ({
   return (
     <span
       className={cn(
-        'inline-flex items-center font-medium',
+        'inline-flex items-center font-medium border',
         pill ? 'rounded-full' : 'rounded-md',
         variantClasses[variant],
         sizeClasses[size],

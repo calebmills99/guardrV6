@@ -29,7 +29,8 @@ import Badge from '@/components/ui/Badge';
 export default function Home() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [demoEmail, setDemoEmail] = useState('');
+  const [demoName, setDemoName] = useState('');
+  const [demoLocation, setDemoLocation] = useState('');
   const [demoResults, setDemoResults] = useState<any>(null);
   const [demoLoading, setDemoLoading] = useState(false);
 
@@ -145,18 +146,22 @@ export default function Home() {
 
   const handleDemoSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!demoEmail.trim()) return;
-    
+    if (!demoName.trim()) return;
+
     setDemoLoading(true);
     try {
-      const response = await fetch('http://134.209.162.223:5000/api/check', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${apiUrl}/api/check`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: demoEmail })
+        body: JSON.stringify({
+          name: demoName,
+          location: demoLocation || undefined
+        })
       });
-      
+
       const data = await response.json();
       setDemoResults(data);
     } catch (error) {
@@ -240,36 +245,44 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <Badge variant="secondary" size="lg" pill className="mb-4 bg-green-600 text-white">
-              🔴 LIVE DEMO - Real API
+              🔴 LIVE DEMO - Real AI Verification
             </Badge>
             <h2 className="text-4xl lg:text-5xl font-bold mb-6">
               Try Guardr Right Now
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Test our breach detection API with any email address. See what Guardr finds instantly.
+              Enter a name to verify. Our AI scans 40+ databases and provides a comprehensive safety assessment in ~2 minutes.
             </p>
           </div>
-          
+
           <Card className="max-w-2xl mx-auto bg-white text-gray-900 p-8">
             <form onSubmit={handleDemoSearch} className="mb-6">
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col gap-4">
                 <Input
-                  type="email"
-                  placeholder="Enter email to check (e.g. test@example.com)"
-                  value={demoEmail}
-                  onChange={(e) => setDemoEmail(e.target.value)}
+                  type="text"
+                  placeholder="Full name (e.g. John Doe)"
+                  value={demoName}
+                  onChange={(e) => setDemoName(e.target.value)}
                   required
-                  className="flex-1"
+                  className="w-full"
                 />
-                <Button 
+                <Input
+                  type="text"
+                  placeholder="Location (optional, e.g. Austin, TX)"
+                  value={demoLocation}
+                  onChange={(e) => setDemoLocation(e.target.value)}
+                  className="w-full"
+                />
+                <Button
                   type="submit"
                   size="lg"
                   loading={demoLoading}
                   icon={Search}
                   iconPosition="right"
                   disabled={demoLoading}
+                  fullWidth
                 >
-                  {demoLoading ? 'Scanning...' : 'Check Now'}
+                  {demoLoading ? 'Verifying Profile...' : 'Run Safety Check'}
                 </Button>
               </div>
             </form>
@@ -287,48 +300,61 @@ export default function Home() {
                 ) : (
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-bold">Breach Report for {demoResults.email}</h3>
-                      <Badge 
+                      <h3 className="text-xl font-bold">Safety Report for {demoResults.name}</h3>
+                      <Badge
                         variant={demoResults.risk_level === 'HIGH' ? 'danger' : demoResults.risk_level === 'MEDIUM' ? 'warning' : 'success'}
                         size="lg"
                       >
                         {demoResults.risk_level} RISK
                       </Badge>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                       <div className="bg-gray-50 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-orange-600">{demoResults.breach_count}</div>
-                        <p className="text-gray-600">Data Breaches Found</p>
+                        <div className="text-2xl font-bold text-blue-600">{demoResults.risk_score}/100</div>
+                        <p className="text-gray-600">Risk Score</p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-blue-600">
+                        <div className="text-2xl font-bold text-green-600">
                           {demoResults.risk_level === 'HIGH' ? '🔴' : demoResults.risk_level === 'MEDIUM' ? '🟡' : '🟢'}
                         </div>
                         <p className="text-gray-600">Safety Status</p>
                       </div>
                     </div>
-                    
-                    {demoResults.breaches && demoResults.breaches.length > 0 && (
-                      <div>
-                        <h4 className="font-semibold mb-3">Breaches Detected:</h4>
+
+                    {demoResults.person_verification && (
+                      <div className="mb-6">
+                        <h4 className="font-semibold mb-3">Verification Report:</h4>
+                        <div className="bg-gray-50 border border-gray-200 rounded p-4">
+                          <p className="text-sm text-gray-700 whitespace-pre-wrap">{demoResults.person_verification}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {demoResults.recommendations && demoResults.recommendations.length > 0 && (
+                      <div className="mb-6">
+                        <h4 className="font-semibold mb-3">Safety Recommendations:</h4>
                         <div className="space-y-2">
-                          {demoResults.breaches.map((breach: any, index: number) => (
-                            <div key={index} className="bg-red-50 border border-red-200 rounded p-3">
-                              <div className="font-semibold text-red-800">{breach.Name}</div>
-                              <div className="text-sm text-red-600">Breached: {breach.BreachDate}</div>
-                              <div className="text-xs text-red-500 mt-1">
-                                Data: {breach.DataClasses?.join(', ') || 'Unknown'}
-                              </div>
+                          {demoResults.recommendations.map((rec: string, index: number) => (
+                            <div key={index} className="flex items-start gap-2 text-sm text-gray-700">
+                              <span className="text-blue-600">•</span>
+                              <span>{rec}</span>
                             </div>
                           ))}
                         </div>
                       </div>
                     )}
-                    
-                    {demoResults.note && (
-                      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
-                        <p className="text-blue-700 text-sm">{demoResults.note}</p>
+
+                    {demoResults.safety_tips && (
+                      <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded">
+                        <h4 className="font-semibold text-blue-900 mb-2">💡 Safety Tips</h4>
+                        <div className="space-y-2">
+                          {demoResults.safety_tips.slice(0, 3).map((tip: any, index: number) => (
+                            <p key={index} className="text-blue-700 text-sm">
+                              <span className="font-semibold">{tip.category}:</span> {tip.message}
+                            </p>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>

@@ -32,7 +32,7 @@ export default function SafetyTips() {
       title: 'Profile Safety',
       icon: UserCheck,
       color: 'text-blue-600',
-      bgColor: 'bg-blue-100',
+      bgColor: 'from-blue-500 to-blue-600',
       tips: [
         {
           title: 'Verify Profile Photos',
@@ -60,7 +60,7 @@ export default function SafetyTips() {
       title: 'Communication Safety',
       icon: MessageSquare,
       color: 'text-green-600',
-      bgColor: 'bg-green-100',
+      bgColor: 'from-emerald-500 to-emerald-600',
       tips: [
         {
           title: 'Start with App Messaging',
@@ -88,7 +88,7 @@ export default function SafetyTips() {
       title: 'Meeting Safety',
       icon: MapPin,
       color: 'text-purple-600',
-      bgColor: 'bg-purple-100',
+      bgColor: 'from-purple-500 to-purple-600',
       tips: [
         {
           title: 'Meet in Public Places',
@@ -116,7 +116,7 @@ export default function SafetyTips() {
       title: 'LGBTQ+ Specific Safety',
       icon: Heart,
       color: 'text-pink-600',
-      bgColor: 'bg-pink-100',
+      bgColor: 'from-pink-500 to-pink-600',
       tips: [
         {
           title: 'Control Your Coming Out',
@@ -248,66 +248,68 @@ export default function SafetyTips() {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'high':
-        return 'text-red-600 bg-red-100';
+        return 'text-red-400 bg-red-500/20';
       case 'medium':
-        return 'text-orange-600 bg-orange-100';
+        return 'text-orange-400 bg-orange-500/20';
       default:
-        return 'text-gray-600 bg-gray-100';
+        return 'text-white/70 bg-white/10';
     }
   };
 
   const getImportanceColor = (importance: string) => {
     switch (importance) {
       case 'high':
-        return 'border-red-300 bg-red-50';
+        return 'border-red-400/40 bg-red-500/5';
       case 'medium':
-        return 'border-orange-300 bg-orange-50';
+        return 'border-orange-400/40 bg-orange-500/5';
       default:
-        return 'border-gray-300 bg-gray-50';
+        return 'border-white/20 bg-white/5';
     }
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen text-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-20 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <section className="relative overflow-hidden py-24 lg:py-32 bg-hero-night">
+        <div className="absolute inset-0 bg-grid-pattern opacity-40"></div>
+        <div className="absolute -top-20 -left-10 w-96 h-96 rounded-full bg-primary-500/40 blur-hero"></div>
+        <div className="absolute top-40 -right-16 w-[520px] h-[520px] rounded-full bg-secondary-500/35 blur-orb"></div>
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
-            <div className="w-24 h-1 pride-gradient mx-auto mb-6 rounded-full"></div>
+            <div className="w-28 h-1 pride-gradient mx-auto mb-8 rounded-full shadow-glow-neutral"></div>
             
-            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+            <h1 className="text-5xl lg:text-7xl font-bold mb-8 leading-tight">
               Stay <span className="gradient-text">Safe</span> While Dating
             </h1>
             
-            <p className="text-xl lg:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl lg:text-2xl text-white/85 mb-12 max-w-3xl mx-auto">
               Essential safety tips for online dating, with special focus on LGBTQ+ community protection.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-6 mb-16 text-sm text-gray-600">
+            <div className="flex flex-wrap justify-center gap-6 mb-16 text-sm text-white/80">
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-emerald-300" />
                 <span>69% harassment awareness</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-emerald-300" />
                 <span>LGBTQ+ focused tips</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-emerald-300" />
                 <span>Community reviewed</span>
               </div>
             </div>
 
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-3xl mx-auto mb-16">
+            <div className="bg-yellow-500/10 border border-yellow-400/30 rounded-lg p-6 max-w-3xl mx-auto mb-16">
               <div className="flex items-start gap-3">
-                <AlertTriangle className="h-6 w-6 text-yellow-600 flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="h-6 w-6 text-yellow-400 flex-shrink-0 mt-0.5" />
                 <div className="text-left">
-                  <h3 className="text-lg font-semibold text-yellow-800 mb-2">
+                  <h3 className="text-lg font-semibold text-yellow-300 mb-2">
                     Important Safety Reminder
                   </h3>
-                  <p className="text-yellow-700">
+                  <p className="text-yellow-100/90">
                     LGBTQ+ individuals face a 69% harassment rate in online dating. These tips can help reduce your risk, 
                     but always trust your instincts and prioritize your safety above all else.
                   </p>
@@ -319,13 +321,13 @@ export default function SafetyTips() {
       </section>
 
       {/* Safety Categories */}
-      <section className="py-20 lg:py-32 bg-white">
+      <section className="py-20 lg:py-32 bg-[color:var(--surface-200)]/75 border-t border-white/5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
               Comprehensive Safety Guide
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-white/85 max-w-3xl mx-auto">
               Essential safety practices organized by category for easy reference.
             </p>
           </div>
@@ -337,10 +339,10 @@ export default function SafetyTips() {
               return (
                 <div key={categoryIndex}>
                   <div className="flex items-center gap-4 mb-8">
-                    <div className={`w-16 h-16 rounded-2xl ${category.bgColor} flex items-center justify-center`}>
-                      <Icon className={`h-8 w-8 ${category.color}`} />
+                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${category.bgColor} flex items-center justify-center`}>
+                      <Icon className={`h-8 w-8 text-white`} />
                     </div>
-                    <h3 className="text-3xl font-bold text-gray-900">
+                    <h3 className="text-3xl font-bold text-white">
                       {category.title}
                     </h3>
                   </div>
@@ -353,7 +355,7 @@ export default function SafetyTips() {
                         hover
                       >
                         <div className="flex items-start justify-between mb-3">
-                          <h4 className="text-lg font-semibold text-gray-900">
+                          <h4 className="text-lg font-semibold text-white">
                             {tip.title}
                           </h4>
                           <Badge 
@@ -364,7 +366,7 @@ export default function SafetyTips() {
                             {tip.importance}
                           </Badge>
                         </div>
-                        <p className="text-gray-600">
+                        <p className="text-white/85">
                           {tip.description}
                         </p>
                       </Card>
@@ -378,13 +380,13 @@ export default function SafetyTips() {
       </section>
 
       {/* Red Flags Section */}
-      <section className="py-20 lg:py-32 bg-gray-50">
+      <section className="py-20 lg:py-32 bg-[color:var(--surface-300)]/70 border-y border-white/5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
               Red Flags to Watch For
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-white/85 max-w-3xl mx-auto">
               Warning signs that indicate potential danger or deception.
             </p>
           </div>
@@ -394,8 +396,8 @@ export default function SafetyTips() {
               <Card key={index} className="h-full" hover>
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-start gap-3">
-                    <Flag className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-                    <h3 className="text-lg font-semibold text-gray-900">
+                    <Flag className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+                    <h3 className="text-lg font-semibold text-white">
                       {flag.flag}
                     </h3>
                   </div>
@@ -407,7 +409,7 @@ export default function SafetyTips() {
                     {flag.severity}
                   </Badge>
                 </div>
-                <p className="text-gray-600">
+                <p className="text-white/85">
                   {flag.description}
                 </p>
               </Card>
@@ -417,13 +419,13 @@ export default function SafetyTips() {
       </section>
 
       {/* Emergency Plan Section */}
-      <section className="py-20 lg:py-32 bg-white">
+      <section className="py-20 lg:py-32 bg-[color:var(--surface-200)]/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
               Create Your Safety Plan
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-white/85 max-w-3xl mx-auto">
               Follow these steps to create a comprehensive safety plan for every date.
             </p>
           </div>
@@ -436,18 +438,18 @@ export default function SafetyTips() {
                 return (
                   <div key={index} className="flex items-start gap-6">
                     <div className="flex-shrink-0">
-                      <div className="flex items-center justify-center w-12 h-12 bg-primary-600 text-white rounded-full font-bold text-lg">
+                      <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full font-bold text-lg shadow-glow-primary">
                         {step.step}
                       </div>
                     </div>
                     <Card className="flex-grow">
                       <div className="flex items-start gap-4">
-                        <Icon className="h-6 w-6 text-primary-600 flex-shrink-0 mt-1" />
+                        <Icon className="h-6 w-6 text-primary-200 flex-shrink-0 mt-1" />
                         <div>
-                          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                          <h3 className="text-xl font-semibold text-white mb-2">
                             {step.title}
                           </h3>
-                          <p className="text-gray-600">
+                          <p className="text-white/85">
                             {step.description}
                           </p>
                         </div>
@@ -462,13 +464,13 @@ export default function SafetyTips() {
       </section>
 
       {/* LGBTQ+ Resources Section */}
-      <section className="py-20 lg:py-32 bg-gray-50">
+      <section className="py-20 lg:py-32 bg-[color:var(--surface-300)]/70 border-y border-white/5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
               LGBTQ+ Safety Resources
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-white/85 max-w-3xl mx-auto">
               Important contacts and resources for LGBTQ+ community members.
             </p>
           </div>
@@ -477,24 +479,24 @@ export default function SafetyTips() {
             {lgbtqResources.map((resource, index) => (
               <Card key={index} hover className="h-full">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-pride-red rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center shadow-glow-accent">
                     <Heart className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-grow">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    <h3 className="text-lg font-semibold text-white mb-2">
                       {resource.name}
                     </h3>
-                    <p className="text-gray-600 mb-3">
+                    <p className="text-white/85 mb-3">
                       {resource.description}
                     </p>
                     <div className="space-y-1 text-sm">
                       <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-gray-400" />
-                        <span className="text-gray-700">{resource.contact}</span>
+                        <Phone className="h-4 w-4 text-white/60" />
+                        <span className="text-white/80">{resource.contact}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Globe className="h-4 w-4 text-gray-400" />
-                        <span className="text-blue-600">{resource.website}</span>
+                        <Globe className="h-4 w-4 text-white/60" />
+                        <span className="text-accent-200">{resource.website}</span>
                       </div>
                     </div>
                   </div>
@@ -506,15 +508,16 @@ export default function SafetyTips() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 lg:py-32 bg-gradient-to-br from-primary-600 to-secondary-600 text-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="w-32 h-1 pride-gradient mx-auto mb-8 rounded-full"></div>
+      <section className="py-20 lg:py-32 bg-cta-flare text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-40 bg-grid-pattern" />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <div className="w-32 h-1 pride-gradient mx-auto mb-8 rounded-full shadow-glow-neutral-strong"></div>
           
           <h2 className="text-4xl lg:text-5xl font-bold mb-6">
             Ready for AI-Powered Protection?
           </h2>
           
-          <p className="text-xl lg:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
+          <p className="text-xl lg:text-2xl mb-10 max-w-3xl mx-auto opacity-90">
             These tips are essential, but Guardr's AI can automate many safety checks for you.
           </p>
 
@@ -537,7 +540,7 @@ export default function SafetyTips() {
             </Button>
           </div>
 
-          <div className="mt-12 text-sm opacity-75">
+          <div className="mt-12 text-sm text-white/80">
             Remember: You are an adult. You decide. Trust your instincts and prioritize your safety.
           </div>
         </div>

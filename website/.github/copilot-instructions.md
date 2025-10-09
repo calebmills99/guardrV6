@@ -7,7 +7,7 @@
 - **Framework:** Next.js 15.4.6 (App Router)
 - **React:** 19.x
 - **Styling:** Tailwind CSS (nightlife/neon theme)
-- **Deployment:** DigitalOcean App Platform (migrated from Vercel)
+- **Deployment:** DigitalOcean App Platform
 - **Backend API:** Flask on localhost:5000 (prod: DO droplet)
 
 ## Critical Rules

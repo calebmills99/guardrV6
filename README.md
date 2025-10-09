@@ -436,6 +436,38 @@ RUST_LOG=info
 
 ---
 
+## 🚀 Deployment
+
+### DigitalOcean App Platform
+
+Guardr is deployed on DigitalOcean App Platform with automatic SSL, custom domain, and internal networking.
+
+#### Frontend (Next.js Web Service)
+- **Build Command:** `npm run build`
+- **Run Command:** `npm start`
+- **Port:** 3000
+- **Cost:** $5/month
+- **Environment Variables:**
+  - `NEXT_PUBLIC_API_URL=${guardr-api.PRIVATE_URL}`
+
+#### Backend (Rust/Python Service)
+- **Build Command:** `pip install -r requirements.txt`
+- **Run Command:** `gunicorn -w 2 -b 0.0.0.0:8080 --timeout 120 guardr_api:app`
+- **Port:** 8080
+- **Cost:** $5/month
+- **Timeout:** 120 seconds (required for OSINT operations that take 60-120s)
+
+#### Deployment Configuration
+- **Domain:** guardr.app
+- **SSL Certificate:** Automatic via Let's Encrypt
+- **Total Cost:** $10/month
+- **Auto-deploy:** Push to `main` branch triggers deployment
+- **Internal Networking:** Services communicate via private URLs for security and performance
+
+The frontend automatically connects to the backend using DigitalOcean's internal networking, ensuring secure communication without exposing the backend API to the public internet.
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions from the community! Here's how you can help:

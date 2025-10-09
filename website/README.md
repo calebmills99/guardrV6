@@ -31,4 +31,35 @@ You can check out the Next.js GitHub repository - your feedback and contribution
 
 ## Deployment
 
-Deployment configuration will be added here. Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details on deployment options.
+### DigitalOcean App Platform
+
+Guardr is deployed on DigitalOcean App Platform with automatic SSL and custom domain support.
+
+#### Frontend (Web Service)
+- **Build Command:** `npm run build`
+- **Run Command:** `npm start`
+- **Port:** 3000
+- **Cost:** $5/month
+- **Environment Variables:**
+  - `NEXT_PUBLIC_API_URL=${guardr-api.PRIVATE_URL}` (internal networking)
+
+#### Backend (Python Service)
+- **Build Command:** `pip install -r requirements.txt`
+- **Run Command:** `gunicorn -w 2 -b 0.0.0.0:8080 --timeout 120 guardr_api:app`
+- **Port:** 8080
+- **Cost:** $5/month
+- **Timeout:** 120 seconds (required for OSINT operations)
+
+#### Configuration
+- **Domain:** guardr.app
+- **SSL:** Automatic (Let's Encrypt)
+- **Total Cost:** $10/month
+- **Auto-deploy:** Push to `main` branch triggers deployment
+
+#### Internal Networking
+The frontend connects to the backend using DigitalOcean's internal networking:
+```
+NEXT_PUBLIC_API_URL=${guardr-api.PRIVATE_URL}
+```
+
+This ensures secure, low-latency communication between services without exposing the backend to the public internet.

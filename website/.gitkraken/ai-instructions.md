@@ -101,7 +101,6 @@ Examples:
 - `style/mobile-form-spacing`
 
 ## Don't Reference
-- Vercel (migrated to DigitalOcean)
 - "About" page with Daniel Obregón (removed)
 - Old light theme (replaced with dark nightlife)
 - CSS modules (use Tailwind utilities)

@@ -387,6 +387,16 @@ npx tsc --noEmit
 - **Output Directory**: `.next/`
 - **Node Version**: 22.x
 - **Auto-deploy**: Push to `main` branch triggers deployment
+- **Domain**: guardr.app
+- **SSL**: Automatic via Let's Encrypt
+- **Backend Communication**: Internal networking via `NEXT_PUBLIC_API_URL=${guardr-api.PRIVATE_URL}`
+
+#### Deployment Architecture
+- **Frontend**: Web Service on port 3000, $5/month
+- **Backend**: Python Service on port 8080, $5/month
+- **Total Cost**: $10/month
+- **Backend Command**: `gunicorn -w 2 -b 0.0.0.0:8080 --timeout 120 guardr_api:app`
+- **Timeout**: 120 seconds (required for OSINT operations)
 
 ### Pre-commit Checklist
 

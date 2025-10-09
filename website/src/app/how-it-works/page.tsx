@@ -132,60 +132,62 @@ export default function HowItWorks() {
       description: 'Advanced reverse image search and facial recognition to detect stolen or fake photos.',
       icon: Camera,
       accuracy: '99.2%',
-      color: 'text-blue-600'
+      color: 'from-blue-500 to-blue-600'
     },
     {
       title: 'Social Media Cross-Check',
       description: 'Verify profile consistency across multiple social platforms and dating apps.',
       icon: Globe,
       accuracy: '96.8%',
-      color: 'text-green-600'
+      color: 'from-green-500 to-emerald-600'
     },
     {
       title: 'Behavioral Analysis',
       description: 'Identify suspicious messaging patterns and potential catfishing behaviors.',
       icon: MessageSquare,
       accuracy: '94.1%',
-      color: 'text-purple-600'
+      color: 'from-purple-500 to-purple-600'
     },
     {
       title: 'Real-Time Monitoring',
       description: 'Continuous monitoring for new data breaches and safety alerts.',
       icon: Monitor,
       accuracy: '24/7',
-      color: 'text-orange-600'
+      color: 'from-orange-500 to-orange-600'
     }
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen text-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-20 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <section className="relative overflow-hidden py-24 lg:py-32 bg-hero-night">
+        <div className="absolute inset-0 bg-grid-pattern opacity-40"></div>
+        <div className="absolute -top-20 -left-10 w-96 h-96 rounded-full bg-primary-500/40 blur-hero"></div>
+        <div className="absolute top-40 -right-16 w-[520px] h-[520px] rounded-full bg-secondary-500/35 blur-orb"></div>
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
-            <div className="w-24 h-1 pride-gradient mx-auto mb-6 rounded-full"></div>
+            <div className="w-28 h-1 pride-gradient mx-auto mb-8 rounded-full shadow-glow-neutral"></div>
             
-            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+            <h1 className="text-5xl lg:text-7xl font-bold mb-8 leading-tight">
               How <span className="gradient-text">Guardr</span> Works
             </h1>
             
-            <p className="text-xl lg:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl lg:text-2xl text-white/85 mb-12 max-w-3xl mx-auto">
               Advanced AI technology meets dating safety. Here's how we protect you every step of the way.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-6 mb-16 text-sm text-gray-600">
+            <div className="flex flex-wrap justify-center gap-6 mb-16 text-sm text-white/80">
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-emerald-300" />
                 <span>99.2% AI accuracy</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-emerald-300" />
                 <span>&lt;5 second analysis</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-emerald-300" />
                 <span>12+ platform support</span>
               </div>
             </div>
@@ -194,16 +196,16 @@ export default function HowItWorks() {
       </section>
 
       {/* Detailed Steps Section */}
-      <section className="py-20 lg:py-32 bg-white">
+      <section className="py-20 lg:py-32 bg-[color:var(--surface-200)]/75 border-t border-white/5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge variant="primary" size="lg" pill className="mb-4">
               The Guardr Process
             </Badge>
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
               Four Steps to Safer Dating
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-white/85 max-w-3xl mx-auto">
               Our streamlined process provides comprehensive safety analysis in seconds.
             </p>
           </div>
@@ -228,28 +230,28 @@ export default function HowItWorks() {
                     </div>
                     
                     <div className="flex items-center gap-3 mb-4">
-                      <Icon className="h-8 w-8 text-primary-600" />
-                      <h3 className="text-3xl font-bold text-gray-900">
+                      <Icon className="h-8 w-8 text-primary-200" />
+                      <h3 className="text-3xl font-bold text-white">
                         {step.title}
                       </h3>
                     </div>
                     
-                    <p className="text-lg text-gray-600 mb-6">
+                    <p className="text-lg text-white/85 mb-6">
                       {step.description}
                     </p>
                     
                     <ul className="space-y-3">
                       {step.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center gap-3">
-                          <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
-                          <span className="text-gray-700">{feature}</span>
+                          <CheckCircle className="h-5 w-5 text-emerald-300 flex-shrink-0" />
+                          <span className="text-white/85">{feature}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                   
                   <div className={isEven ? 'lg:col-start-2' : ''}>
-                    <Card className="p-8 h-full">
+                    <Card className="p-8 h-full bg-gradient-to-br from-[color:var(--surface-200)]/80 to-[color:var(--surface-400)]/80">
                       <div className="text-center">
                         <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto mb-6">
                           <Icon className="h-12 w-12 text-white" />
@@ -275,13 +277,13 @@ export default function HowItWorks() {
       </section>
 
       {/* Technology Stack Section */}
-      <section className="py-20 lg:py-32 bg-gray-50">
+      <section className="py-20 lg:py-32 bg-[color:var(--surface-300)]/70 border-y border-white/5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
               Powered by Advanced Technology
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-white/85 max-w-3xl mx-auto">
               Our comprehensive tech stack ensures the highest accuracy and reliability in dating safety.
             </p>
           </div>
@@ -295,7 +297,7 @@ export default function HowItWorks() {
                     <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
                       <Icon className="h-6 w-6 text-white" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900">
+                    <h3 className="text-xl font-semibold text-white">
                       {tech.category}
                     </h3>
                   </div>
@@ -303,8 +305,8 @@ export default function HowItWorks() {
                   <ul className="space-y-3">
                     {tech.technologies.map((technology, techIndex) => (
                       <li key={techIndex} className="flex items-start gap-3">
-                        <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700">{technology}</span>
+                        <CheckCircle className="h-5 w-5 text-emerald-300 flex-shrink-0 mt-0.5" />
+                        <span className="text-white/85">{technology}</span>
                       </li>
                     ))}
                   </ul>
@@ -316,13 +318,13 @@ export default function HowItWorks() {
       </section>
 
       {/* Safety Features Section */}
-      <section className="py-20 lg:py-32 bg-white">
+      <section className="py-20 lg:py-32 bg-[color:var(--surface-200)]/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
               Advanced Safety Features
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-white/85 max-w-3xl mx-auto">
               Multi-layered protection systems working together to keep you safe.
             </p>
           </div>
@@ -333,19 +335,19 @@ export default function HowItWorks() {
               return (
                 <Card key={index} hover className="h-full">
                   <div className="flex items-start gap-4">
-                    <div className={`w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center ${feature.color}`}>
-                      <Icon className="h-6 w-6" />
+                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center bg-gradient-to-br ${feature.color}`}>
+                      <Icon className="h-6 w-6 text-white" />
                     </div>
                     <div className="flex-grow">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-lg font-semibold text-white">
                           {feature.title}
                         </h3>
                         <Badge variant="success" size="sm" pill>
                           {feature.accuracy}
                         </Badge>
                       </div>
-                      <p className="text-gray-600">
+                      <p className="text-white/85">
                         {feature.description}
                       </p>
                     </div>
@@ -358,15 +360,16 @@ export default function HowItWorks() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 lg:py-32 bg-gradient-to-br from-primary-600 to-secondary-600 text-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="w-32 h-1 pride-gradient mx-auto mb-8 rounded-full"></div>
+      <section className="py-20 lg:py-32 bg-cta-flare text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-40 bg-grid-pattern" />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <div className="w-32 h-1 pride-gradient mx-auto mb-8 rounded-full shadow-glow-neutral-strong"></div>
           
           <h2 className="text-4xl lg:text-5xl font-bold mb-6">
             Ready to Experience Guardr?
           </h2>
           
-          <p className="text-xl lg:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
+          <p className="text-xl lg:text-2xl mb-10 max-w-3xl mx-auto opacity-90">
             Join thousands of users who trust Guardr to make their dating experience safer and more confident.
           </p>
 
@@ -389,17 +392,17 @@ export default function HowItWorks() {
             </Button>
           </div>
 
-          <div className="mt-12 flex justify-center items-center flex-wrap gap-8 text-sm opacity-75">
+          <div className="mt-12 flex justify-center items-center flex-wrap gap-8 text-sm text-white/80">
             <div className="flex items-center">
-              <CheckCircle className="h-4 w-4 mr-2" />
+              <CheckCircle className="h-4 w-4 mr-2 text-secondary-200" />
               No long-term contracts
             </div>
             <div className="flex items-center">
-              <CheckCircle className="h-4 w-4 mr-2" />
+              <CheckCircle className="h-4 w-4 mr-2 text-secondary-200" />
               Cancel anytime
             </div>
             <div className="flex items-center">
-              <CheckCircle className="h-4 w-4 mr-2" />
+              <CheckCircle className="h-4 w-4 mr-2 text-secondary-200" />
               30-day money back guarantee
             </div>
           </div>

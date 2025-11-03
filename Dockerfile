@@ -1,5 +1,5 @@
 # Multi-stage build for Rust backend
-FROM rust:1.75-slim as builder
+FROM rust:1.83-slim as builder
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y \

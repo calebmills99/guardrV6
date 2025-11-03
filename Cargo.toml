@@ -27,7 +27,7 @@ argon2 = "0.4"
 rand = "0.8"
 
 # Database
-sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "sqlite", "chrono", "uuid"] }
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "sqlite", "postgres", "chrono", "uuid", "migrate"] }
 redis = { version = "0.24", features = ["tokio-comp", "tokio-rustls-comp"] }
 mongodb = "2.8"
 

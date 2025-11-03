@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Result};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{Pool, Sqlite, SqlitePool, Row, FromRow};
+use sqlx::{Any, Pool, Row, FromRow};
 use std::str::FromStr;
 use uuid::Uuid;
 
@@ -9,16 +9,18 @@ use crate::config::Settings;
 
 #[derive(Debug, Clone)]
 pub struct Database {
-    pub pool: Pool<Sqlite>,
+    pub pool: Pool<Any>,
 }
 
 impl Database {
     pub async fn new(settings: &Settings) -> Result<Self> {
-        let pool = SqlitePool::connect(&settings.database.sqlite_url).await?;
-        
-        // Run migrations
-        sqlx::migrate!("./migrations").run(&pool).await?;
-        
+        // Connect using Any pool which supports both SQLite and PostgreSQL
+        let pool = sqlx::AnyPool::connect(&settings.database.sqlite_url).await?;
+
+        // Run migrations (note: migrations need to be database-agnostic or separate)
+        // TODO: Add proper migration support for PostgreSQL
+        // sqlx::migrate!("./migrations").run(&pool).await?;
+
         Ok(Database { pool })
     }
 

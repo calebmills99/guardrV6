@@ -48,9 +48,8 @@ USER guardr
 # Expose port
 EXPOSE 5000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:5000/health || exit 1
+# Note: Health check is handled by DigitalOcean App Platform via http_path config
+# No need for Docker HEALTHCHECK since curl is not installed in slim image
 
 # Run the API server
 CMD ["guardr-api"]

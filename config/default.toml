@@ -13,7 +13,7 @@ acquire_timeout_seconds = 30
 idle_timeout_seconds = 300
 
 [auth]
-jwt_secret = "your-jwt-secret-change-this-in-production"
+jwt_secret = "guardr-production-jwt-secret-32chars-CHANGE-THIS-VALUE"
 jwt_expiration_hours = 24
 refresh_token_expiration_days = 30
 bcrypt_cost = 12
@@ -26,7 +26,7 @@ connection_timeout_seconds = 5
 command_timeout_seconds = 3
 
 [security]
-cors_allowed_origins = ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"]
+cors_allowed_origins = ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "https://guardr.app", "https://www.guardr.app", "https://guardr-api-4c7ct.ondigitalocean.app"]
 encryption_key = "guardr-dev-key-32chars-123456789"
 password_min_length = 8
 password_require_uppercase = true

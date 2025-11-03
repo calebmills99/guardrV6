@@ -28,11 +28,6 @@ rand = "0.8"
 
 # Database
 sqlx = { version = "0.7", default-features = false, features = ["runtime-tokio-rustls", "chrono", "uuid", "migrate"] }
-
-[features]
-default = ["postgres"]
-postgres = ["sqlx/postgres"]
-sqlite = ["sqlx/sqlite"]
 redis = { version = "0.24", features = ["tokio-comp", "tokio-rustls-comp"] }
 mongodb = "2.8"
 
@@ -78,3 +73,8 @@ path = "src/main.rs"
 [[bin]]
 name = "guardr-api"
 path = "src/api_server.rs"
+
+[features]
+default = ["postgres"]
+postgres = ["sqlx/postgres"]
+sqlite = ["sqlx/sqlite"]

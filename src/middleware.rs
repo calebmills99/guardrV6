@@ -21,11 +21,11 @@ use crate::{
 };
 
 // Rate limiting middleware
-pub type RateLimiterMap = Arc<Mutex<HashMap<String, Arc<RateLimiter<String, governor::state::InMemoryState, governor::clock::DefaultClock>>>>>;
+pub type IpRateLimiter = RateLimiter<String, governor::state::keyed::DefaultKeyedStateStore<String>, governor::clock::DefaultClock>;
 
-pub fn create_rate_limiter(requests_per_minute: u32) -> Arc<RateLimiter<String, governor::state::InMemoryState, governor::clock::DefaultClock>> {
+pub fn create_rate_limiter(requests_per_minute: u32) -> Arc<IpRateLimiter> {
     let quota = Quota::per_minute(NonZeroU32::new(requests_per_minute).unwrap());
-    Arc::new(RateLimiter::new(quota, &governor::state::InMemoryState::new(), &governor::clock::DefaultClock::default()))
+    Arc::new(RateLimiter::keyed(quota))
 }
 
 pub async fn rate_limit_middleware(
@@ -162,12 +162,12 @@ pub async fn api_key_middleware(
             if let Some((api_key_record, user)) = state.db.get_api_key_by_hash(&key_hash).await? {
                 // Update last used timestamp
                 state.db.update_api_key_last_used(api_key_record.id).await?;
-                
+
                 // Add user info to request extensions
                 request.extensions_mut().insert(AuthenticatedUser {
                     user_id: user.id,
-                    email: user.email,
-                    subscription_tier: user.subscription_tier,
+                    email: user.email.clone(),
+                    subscription_tier: user.subscription_tier.clone(),
                     claims: crate::auth::Claims {
                         sub: user.id.to_string(),
                         email: user.email,
@@ -177,7 +177,7 @@ pub async fn api_key_middleware(
                         jti: uuid::Uuid::new_v4().to_string(),
                     },
                 });
-                
+
                 return Ok(next.run(request).await);
             }
         }

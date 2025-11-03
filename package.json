@@ -1,0 +1,23 @@
+{
+  "name": "guardrv6",
+  "version": "1.0.0",
+  "description": "[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/) [![Next.js](https://img.shields.io/badge/next.js-14-black.svg)](https://nextjs.org/)",
+  "homepage": "https://github.com/calebmills99/guardrV6#readme",
+  "bugs": {
+    "url": "https://github.com/calebmills99/guardrV6/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/calebmills99/guardrV6.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

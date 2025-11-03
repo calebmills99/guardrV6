@@ -3,8 +3,8 @@ use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use argon2::password_hash::{rand_core::OsRng, SaltString};
 use axum::{
     async_trait,
-    extract::{FromRequest, Request, State},
-    http::{header::AUTHORIZATION, StatusCode},
+    extract::{FromRequest, FromRequestParts, Request, State},
+    http::{header::AUTHORIZATION, request::Parts, StatusCode},
     Json, RequestExt,
 };
 use base64::{Engine as _, engine::general_purpose};
@@ -22,7 +22,7 @@ use crate::config::Settings;
 use crate::database::{Database, User, UserSubscriptionTier};
 use crate::errors::AppError;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Claims {
     pub sub: String,         // User ID
     pub email: String,       // User email
@@ -40,11 +40,19 @@ pub struct RefreshTokenClaims {
     pub iat: i64,           // Issued at
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct AuthService {
     pub encoding_key: EncodingKey,
     pub decoding_key: DecodingKey,
     pub settings: Settings,
+}
+
+impl std::fmt::Debug for AuthService {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AuthService")
+            .field("settings", &self.settings)
+            .finish()
+    }
 }
 
 impl AuthService {
@@ -138,7 +146,7 @@ impl AuthService {
         }
     }
 
-    pub async fn blacklist_token(&self, redis: &mut redis::Connection, jti: &str, exp: i64) -> Result<()> {
+    pub async fn blacklist_token(&self, redis: &mut redis::aio::Connection, jti: &str, exp: i64) -> Result<()> {
         let ttl = exp - Utc::now().timestamp();
         if ttl > 0 {
             redis.set_ex::<&str, &str, ()>(&format!("blacklist:{}", jti), "true", ttl as u64)
@@ -148,7 +156,7 @@ impl AuthService {
         Ok(())
     }
 
-    pub async fn is_token_blacklisted(&self, redis: &mut redis::Connection, jti: &str) -> Result<bool> {
+    pub async fn is_token_blacklisted(&self, redis: &mut redis::aio::Connection, jti: &str) -> Result<bool> {
         let exists: bool = redis.exists(&format!("blacklist:{}", jti))
             .await
             .map_err(|e| anyhow!("Failed to check token blacklist: {}", e))?;
@@ -205,7 +213,7 @@ pub struct RegisterRequest {
     pub email: String,
     
     #[validate(length(min = 8, message = "Password must be at least 8 characters"))]
-    #[validate(custom = "validate_password_strength")]
+    #[validate(custom(function = "validate_password_strength"))]
     pub password: String,
     
     pub confirm_password: String,
@@ -255,6 +263,7 @@ pub struct RefreshTokenRequest {
 }
 
 // JWT authentication extractor
+#[derive(Debug, Clone, Serialize)]
 pub struct AuthenticatedUser {
     pub user_id: Uuid,
     pub email: String,
@@ -263,15 +272,15 @@ pub struct AuthenticatedUser {
 }
 
 #[async_trait]
-impl<S> FromRequest<S> for AuthenticatedUser
+impl<S> FromRequestParts<S> for AuthenticatedUser
 where
     S: Send + Sync,
 {
     type Rejection = AppError;
 
-    async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
-        let auth_header = req
-            .headers()
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        let auth_header = parts
+            .headers
             .get(AUTHORIZATION)
             .and_then(|header| header.to_str().ok())
             .and_then(|header| header.strip_prefix("Bearer "));

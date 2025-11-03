@@ -196,10 +196,11 @@ pub fn validation_error_response(errors: &validator::ValidationErrors) -> AppErr
     let mut error_map = HashMap::new();
     
     for (field, field_errors) in errors.errors() {
-        let messages: Vec<String> = field_errors
-            .iter()
-            .map(|error| {
-                match error.code.as_ref() {
+        let messages: Vec<String> = match field_errors {
+            validator::ValidationErrorsKind::Field(errors_vec) => errors_vec
+                .iter()
+                .map(|error| {
+                    match error.code.as_ref() {
                     "email" => "Invalid email format".to_string(),
                     "length" => {
                         if let Some(min) = error.params.get("min") {
@@ -219,10 +220,13 @@ pub fn validation_error_response(errors: &validator::ValidationErrors) -> AppErr
                     _ => error.message.as_ref()
                         .map(|m| m.to_string())
                         .unwrap_or_else(|| "Invalid value".to_string()),
-                }
-            })
-            .collect();
-        
+                    }
+                })
+                .collect(),
+            validator::ValidationErrorsKind::Struct(_) => vec!["Nested validation failed".to_string()],
+            validator::ValidationErrorsKind::List(_) => vec!["List validation failed".to_string()],
+        };
+
         error_map.insert(field.to_string(), messages);
     }
 

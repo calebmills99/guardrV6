@@ -1,0 +1,28 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+This onion address has been signed with drug_hub_master_key.
+Key fingerprint: DA08FAC38F5731B31FC5A1EE0DF7792098838DF5
+
+2pmwn6hszucucaz53r3jkvv3xkxnwoe7khtuaw63q7bipexmshdf6wyd.onion
+
+Verify this signature. If it doesn't match DO NOT PROCEED!
+
+-----BEGIN PGP SIGNATURE-----
+
+wsG5BAEBCgBtBYJo8YfXCZAN93kgmION9UUUAAAAAAAcACBzYWx0QG5vdGF0aW9u
+cy5vcGVucGdwanMub3JnA497fiQoy1WVgNQIh45SOYQuiajVBGDGHqQgid7iYmoW
+IQTaCPrDj1cxsx/Foe4N93kgmION9QAAm+8QAJ5U3RcNghwGeFk4N71Y62a4JA3i
+8+X45Y6UEN4HuPioTXZw1UW9bBXVVFKs9JBIHaW1B3s8rqsdDuwtY9ua2ljq+55F
+uXdWkEWtiUmCVwZiegI3xK+m8TEGOmJ6Forv8oPUKdzyDdRePxavj/c0UOcfG0jO
+nloo/4qRGv/DqMVmYuy/ZzCK3o/wWNx5Oo7CwNDTCVcA0+8eJiOM1d5ph5sQSuv4
+zg5z7gkoNfwDHK+rHX1GuyAIqGoL+ZG5QA4bGG1OaaT2sjIi+u+YG3k0IXaXwoMH
+WGwxcmri0H8w6DeAcqVf1nV1jZ+sZXYWOdhk7tyKdOv8k/wJDeBMDC6ucHxt4+BM
+t/1c0i/DnkN77HmuEWPUNzB9hcFtCug/7GCqNlBaalJWaAApUiJF7Hm0SW0aTYxS
+6qNq5s0zLScSktfgHNuuW8S0CpAG4lJXbl0nTx6aiDKLZQrPzqNSYWFamoyx61Sz
+3e5l6zImMEnPfD3z7T3iVD1Lj0Y/P+iU7HZqiG/qiORq7o7bPnI3+wwPQQ5tBHb+
+KibAErjwCxj1DC/zcnvRDloDxlLs9NrfPNKdZxTtsDizz7UFAW8oTNIR4uhEk9DZ
+7NNCD7iVmhXZxue2CSr5JXQCaOvPu/qK2RLhskvjpWaLzIthPiPXm+E6ZVBIRYpn
+Je4HGhiu9MBaV7oH
+=uT99
+-----END PGP SIGNATURE-----

@@ -28,7 +28,8 @@ impl Database {
 }
 
 // User models
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, sqlx::Type)]
+#[sqlx(type_name = "TEXT")]
 pub enum UserSubscriptionTier {
     Free,
     Pro,

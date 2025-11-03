@@ -45,7 +45,10 @@ pub fn create_router() -> Router<crate::state::AppState> {
         // Health check (no auth required)
         .route("/health", get(health_check))
         .route("/", get(root_info))
-        
+
+        // Public demo endpoint (no auth required)
+        .route("/api/check", post(demo_check))
+
         // Authentication routes (no auth required)
         .route("/api/v1/auth/register", post(auth::register))
         .route("/api/v1/auth/login", post(auth::login))
@@ -114,6 +117,88 @@ async fn root_info() -> Json<ApiResponse<serde_json::Value>> {
         error: None,
         message: Some("Welcome to Guardr API".to_string()),
         timestamp: chrono::Utc::now(),
+    })
+}
+
+// Public demo check endpoint
+#[derive(Debug, Deserialize)]
+struct DemoCheckRequest {
+    name: String,
+    location: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+struct SafetyTip {
+    category: String,
+    message: String,
+}
+
+#[derive(Debug, Serialize)]
+struct DemoCheckResponse {
+    name: String,
+    risk_level: String,
+    risk_score: u32,
+    person_verification: String,
+    recommendations: Vec<String>,
+    safety_tips: Vec<SafetyTip>,
+}
+
+async fn demo_check(
+    State(_state): State<AppState>,
+    Json(payload): Json<DemoCheckRequest>,
+) -> Json<DemoCheckResponse> {
+    // This is a demo/mock endpoint for the public website
+    // In production, you'd call real OSINT services here
+
+    let name = payload.name.clone();
+    let location_str = payload.location.as_ref().map(|l| format!(" in {}", l)).unwrap_or_default();
+
+    // Mock risk assessment based on name length (for demo purposes)
+    let risk_score = ((name.len() * 7) % 100) as u32;
+    let risk_level = if risk_score >= 70 {
+        "LOW"
+    } else if risk_score >= 40 {
+        "MEDIUM"
+    } else {
+        "HIGH"
+    }.to_string();
+
+    let person_verification = format!(
+        "Demo verification for {}{}: This is a demonstration of Guardr's OSINT capabilities. \
+        In production, we would check 40+ databases, scan for breaches, verify identity claims, \
+        and analyze behavioral patterns. Real analysis takes 60-120 seconds.",
+        name, location_str
+    );
+
+    let recommendations = vec![
+        "Video call before meeting in person to verify identity".to_string(),
+        "Meet in a public place for your first meeting".to_string(),
+        "Tell a trusted friend where you're going".to_string(),
+        "Trust your instincts - if something feels off, it probably is".to_string(),
+    ];
+
+    let safety_tips = vec![
+        SafetyTip {
+            category: "Smart Habits".to_string(),
+            message: "Always meet in public places for first dates".to_string(),
+        },
+        SafetyTip {
+            category: "Did You Know?".to_string(),
+            message: "69% of LGBTQ+ individuals experience harassment in online dating".to_string(),
+        },
+        SafetyTip {
+            category: "You Decide".to_string(),
+            message: "You are an adult. Use Guardr's insights to make informed decisions about your safety.".to_string(),
+        },
+    ];
+
+    Json(DemoCheckResponse {
+        name,
+        risk_level,
+        risk_score,
+        person_verification,
+        recommendations,
+        safety_tips,
     })
 }
 

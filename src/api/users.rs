@@ -1,5 +1,5 @@
 use axum::{extract::{State, Path}, Json};
-use chrono::Utc;
+use chrono::{Datelike, Timelike, Utc};
 use serde::{Deserialize, Serialize};
 use tracing::info;
 use uuid::Uuid;
@@ -92,15 +92,16 @@ pub async fn get_profile(
     // Calculate reset date (first day of next month)
     let now = Utc::now();
     let next_month = if now.month() == 12 {
-        now.with_year(now.year() + 1).unwrap().with_month(1).unwrap()
+        now.with_year(now.year() + 1).and_then(|d| d.with_month(1))
     } else {
-        now.with_month(now.month() + 1).unwrap()
+        now.with_month(now.month() + 1)
     };
-    let reset_date = next_month.with_day(1).unwrap()
-        .with_hour(0).unwrap()
-        .with_minute(0).unwrap()
-        .with_second(0).unwrap()
-        .with_nanosecond(0).unwrap();
+    let reset_date = next_month.and_then(|d| d.with_day(1))
+        .and_then(|d| d.with_hour(0))
+        .and_then(|d| d.with_minute(0))
+        .and_then(|d| d.with_second(0))
+        .and_then(|d| d.with_nanosecond(0))
+        .unwrap_or_else(|| Utc::now());
 
     let usage_stats = UsageStatsResponse {
         current_month,

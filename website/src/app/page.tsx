@@ -168,8 +168,11 @@ export default function Home() {
     if (!demoName.trim()) return;
 
     setDemoLoading(true);
+    setDemoResults(null); // Clear previous results
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+      // CRITICAL: OSINT operations take 60-120 seconds, so we need a 2-minute timeout
       const response = await fetch(`${apiUrl}/api/check`, {
         method: 'POST',
         headers: {
@@ -178,14 +181,30 @@ export default function Home() {
         body: JSON.stringify({
           name: demoName,
           location: demoLocation || undefined
-        })
+        }),
+        // 2-minute timeout for long-running OSINT searches
+        signal: AbortSignal.timeout(120000)
       });
+
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status}: ${response.statusText}`);
+      }
 
       const data = (await response.json()) as DemoResult;
       setDemoResults(data);
     } catch (error) {
       console.error('Demo search failed:', error);
-      setDemoResults({ error: 'Failed to connect to Guardr API' });
+      if (error instanceof Error) {
+        if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+          setDemoResults({
+            error: 'Search timed out. OSINT operations can take up to 2 minutes. Please try again.'
+          });
+        } else {
+          setDemoResults({ error: `Failed to connect to Guardr API: ${error.message}` });
+        }
+      } else {
+        setDemoResults({ error: 'Failed to connect to Guardr API' });
+      }
     } finally {
       setDemoLoading(false);
     }
@@ -270,7 +289,10 @@ export default function Home() {
               Try Guardr Right Now
             </h2>
             <p className="text-xl text-white/85 max-w-3xl mx-auto">
-              Enter a name to verify. Our AI scans 40+ databases and provides a comprehensive safety assessment in ~2 minutes.
+              Enter a name to verify. Our AI scans 40+ databases and provides a comprehensive safety assessment.
+            </p>
+            <p className="text-sm text-yellow-300/90 mt-2 max-w-2xl mx-auto">
+              ⏱️ Deep OSINT analysis takes 60-120 seconds. Please be patient while we verify identity, check breaches, and scan the dark web.
             </p>
           </div>
 
@@ -301,8 +323,13 @@ export default function Home() {
                   disabled={demoLoading}
                   fullWidth
                 >
-                  {demoLoading ? 'Verifying Profile...' : 'Run Safety Check'}
+                  {demoLoading ? 'Analyzing... (1-2 min)' : 'Run Safety Check'}
                 </Button>
+                {demoLoading && (
+                  <p className="text-sm text-center text-yellow-300/90 mt-2">
+                    🔍 Deep scanning in progress... This takes 60-120 seconds as we check breach databases, scan the dark web, and verify identity claims.
+                  </p>
+                )}
               </div>
             </form>
             

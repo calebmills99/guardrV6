@@ -1,21 +1,18 @@
 // Complete Guardr API Server
 use anyhow::Result;
 use axum::{
-    middleware,
-    routing::get,
+    middleware as axum_middleware,
     Router,
 };
 use dotenvy::dotenv;
 use std::net::SocketAddr;
 use tokio::signal;
 use tower_http::{
-    compression::CompressionLayer,
     cors::CorsLayer,
-    normalize_path::NormalizePathLayer,
     timeout::TimeoutLayer,
     trace::TraceLayer,
 };
-use tracing::{info, warn, error};
+use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 // Import all modules
@@ -33,7 +30,6 @@ mod weak_pass;
 mod risk_score;
 
 use crate::{
-    api,
     config::Settings,
     middleware::*,
     state::AppState,
@@ -69,11 +65,8 @@ async fn main() -> Result<()> {
     let app = build_app_router(app_state.clone());
 
     // Create server address
-    let addr = SocketAddr::from((
-        settings.server.host.parse::<std::net::IpAddr>()?
-            .into(),
-        settings.server.port,
-    ));
+    let ip_addr: std::net::IpAddr = settings.server.host.parse()?;
+    let addr = SocketAddr::new(ip_addr, settings.server.port);
 
     info!("Server starting on {}", addr);
     info!("API documentation available at http://{}/docs", addr);
@@ -103,16 +96,14 @@ fn build_app_router(state: AppState) -> Router {
     Router::new()
         .merge(api_router)
         // Add global middleware (order matters - first added = outermost layer)
-        .layer(middleware::from_fn(gdpr_compliance_middleware))
-        .layer(middleware::from_fn(security_headers_middleware))
-        .layer(middleware::from_fn_with_state(state.clone(), rate_limit_middleware))
-        .layer(middleware::from_fn(request_logging_middleware))
-        .layer(CompressionLayer::new())
+        .layer(axum_middleware::from_fn(gdpr_compliance_middleware))
+        .layer(axum_middleware::from_fn(security_headers_middleware))
+        .layer(axum_middleware::from_fn_with_state(state.clone(), rate_limit_middleware))
+        .layer(axum_middleware::from_fn(request_logging_middleware))
         .layer(TimeoutLayer::new(std::time::Duration::from_secs(
             state.settings.server.request_timeout_seconds
         )))
         .layer(TraceLayer::new_for_http())
-        .layer(NormalizePathLayer::trim_trailing_slash())
         .layer(CorsLayer::new()
             .allow_origin(state.settings.security.cors_allowed_origins.iter()
                 .map(|origin| origin.parse().unwrap())
@@ -135,7 +126,7 @@ fn init_logging(settings: &Settings) -> Result<()> {
         );
 
     if settings.logging.json_format {
-        subscriber.with(tracing_subscriber::fmt::layer().json()).init();
+        subscriber.with(tracing_subscriber::fmt::layer().with_target(true)).init();
     } else {
         subscriber.with(tracing_subscriber::fmt::layer()).init();
     }

@@ -1,0 +1,49 @@
+# Guardr Default Configuration
+
+[server]
+host = "0.0.0.0"
+port = 5000
+request_timeout_seconds = 120  # Extended for OSINT operations
+
+[database]
+sqlite_url = "sqlite://guardr.db"
+max_connections = 20
+min_connections = 1
+acquire_timeout_seconds = 30
+idle_timeout_seconds = 300
+
+[auth]
+jwt_secret = "your-jwt-secret-change-this-in-production"
+jwt_expiration_hours = 24
+refresh_token_expiration_days = 30
+bcrypt_cost = 12
+api_key_length = 32
+
+[redis]
+url = "redis://127.0.0.1:6379"
+max_connections = 10
+connection_timeout_seconds = 5
+command_timeout_seconds = 3
+
+[security]
+cors_allowed_origins = ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"]
+encryption_key = "guardr-dev-key-32chars-123456789"
+password_min_length = 8
+password_require_uppercase = true
+password_require_lowercase = true
+password_require_numbers = true
+password_require_special = true
+max_login_attempts = 5
+lockout_duration_minutes = 15
+
+[logging]
+level = "info"
+max_file_size_mb = 10
+max_files = 5
+json_format = false
+
+[rate_limiting]
+requests_per_minute = 60
+burst_size = 10
+premium_multiplier = 5
+enterprise_multiplier = 20

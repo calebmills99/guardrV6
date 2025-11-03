@@ -116,3 +116,4 @@ settings.json
 *.zip
 target/
 node_modules/
+*.env.local

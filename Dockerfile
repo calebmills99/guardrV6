@@ -39,6 +39,9 @@ COPY --from=builder /app/target/release/guardr-api /usr/local/bin/guardr-api
 # Copy config directory
 COPY --chown=guardr:guardr config /app/config
 
+# Create data directory for SQLite with proper permissions
+RUN mkdir -p /app/data && chown -R guardr:guardr /app
+
 # Set working directory
 WORKDIR /app
 

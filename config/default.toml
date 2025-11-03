@@ -6,7 +6,7 @@ port = 5000
 request_timeout_seconds = 120  # Extended for OSINT operations
 
 [database]
-sqlite_url = "sqlite://guardr.db"
+sqlite_url = "sqlite:///app/data/guardr.db"
 max_connections = 20
 min_connections = 1
 acquire_timeout_seconds = 30

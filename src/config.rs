@@ -25,7 +25,7 @@ pub struct ServerConfig {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct DatabaseConfig {
-    pub sqlite_url: String,  // Also used for PostgreSQL URL via DATABASE_URL env var
+    pub sqlite_url: String,
     pub mongodb_url: Option<String>,
     pub max_connections: u32,
     pub min_connections: u32,

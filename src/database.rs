@@ -1,38 +1,24 @@
 use anyhow::{anyhow, Result};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{Pool, Row, FromRow};
+use sqlx::{Pool, Sqlite, SqlitePool, Row, FromRow};
 use std::str::FromStr;
 use uuid::Uuid;
 
 use crate::config::Settings;
 
-#[cfg(feature = "postgres")]
-use sqlx::Postgres;
-#[cfg(not(feature = "postgres"))]
-use sqlx::Sqlite;
-
-#[cfg(feature = "postgres")]
-pub type DbPool = Pool<Postgres>;
-#[cfg(not(feature = "postgres"))]
-pub type DbPool = Pool<Sqlite>;
-
 #[derive(Debug, Clone)]
 pub struct Database {
-    pub pool: DbPool,
+    pub pool: Pool<Sqlite>,
 }
 
 impl Database {
     pub async fn new(settings: &Settings) -> Result<Self> {
-        // Connect based on the database URL
-        let database_url = std::env::var("DATABASE_URL")
-            .unwrap_or_else(|_| settings.database.sqlite_url.clone());
-
-        let pool = DbPool::connect(&database_url).await?;
-
-        // TODO: Run migrations properly for chosen database
-        // sqlx::migrate!("./migrations").run(&pool).await?;
-
+        let pool = SqlitePool::connect(&settings.database.sqlite_url).await?;
+        
+        // Run migrations
+        sqlx::migrate!("./migrations").run(&pool).await?;
+        
         Ok(Database { pool })
     }
 

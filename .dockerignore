@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+.github
+
+# Build artifacts
+target/
+*.db
+*.db-shm
+*.db-wal
+
+# Documentation
+*.md
+docs/
+
+# Config that shouldn't be in image
+.env
+.env.local
+website/.env.local
+
+# Frontend
+website/node_modules
+website/.next
+website/out
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+1029*.txt
+1101.txt

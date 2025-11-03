@@ -47,43 +47,44 @@ pub fn create_router() -> Router<crate::state::AppState> {
         .route("/", get(root_info))
 
         // Public demo endpoint (no auth required)
-        .route("/api/check", post(demo_check))
+        // Note: Ingress strips /api prefix, so /api/check becomes /check
+        .route("/check", post(demo_check))
 
         // Authentication routes (no auth required)
-        .route("/api/v1/auth/register", post(auth::register))
-        .route("/api/v1/auth/login", post(auth::login))
-        .route("/api/v1/auth/refresh", post(auth::refresh_token))
-        .route("/api/v1/auth/logout", post(auth::logout))
-        
+        .route("/v1/auth/register", post(auth::register))
+        .route("/v1/auth/login", post(auth::login))
+        .route("/v1/auth/refresh", post(auth::refresh_token))
+        .route("/v1/auth/logout", post(auth::logout))
+
         // User management (auth required)
-        .route("/api/v1/user/profile", get(users::get_profile))
-        .route("/api/v1/user/profile", put(users::update_profile))
-        .route("/api/v1/user/api-keys", get(users::list_api_keys))
-        .route("/api/v1/user/api-keys", post(users::create_api_key))
-        .route("/api/v1/user/api-keys/:key_id", delete(users::revoke_api_key))
-        
+        .route("/v1/user/profile", get(users::get_profile))
+        .route("/v1/user/profile", put(users::update_profile))
+        .route("/v1/user/api-keys", get(users::list_api_keys))
+        .route("/v1/user/api-keys", post(users::create_api_key))
+        .route("/v1/user/api-keys/:key_id", delete(users::revoke_api_key))
+
         // Security analysis endpoints (auth required)
-        .route("/api/v1/security/check-breach", post(security::check_breach))
-        .route("/api/v1/security/check-password", post(security::check_password_strength))
-        .route("/api/v1/security/risk-score", post(security::calculate_risk_score))
-        .route("/api/v1/security/bulk-check", post(security::bulk_security_check))
-        .route("/api/v1/security/filter-data", post(security::filter_data))
-        
+        .route("/v1/security/check-breach", post(security::check_breach))
+        .route("/v1/security/check-password", post(security::check_password_strength))
+        .route("/v1/security/risk-score", post(security::calculate_risk_score))
+        .route("/v1/security/bulk-check", post(security::bulk_security_check))
+        .route("/v1/security/filter-data", post(security::filter_data))
+
         // Dating safety endpoints (auth required)
-        .route("/api/v1/dating/analyze-conversation", post(dating::analyze_conversation))
-        .route("/api/v1/dating/verify-claims", post(dating::verify_identity_claims))
-        .route("/api/v1/dating/safety-report", post(dating::generate_safety_report))
-        
+        .route("/v1/dating/analyze-conversation", post(dating::analyze_conversation))
+        .route("/v1/dating/verify-claims", post(dating::verify_identity_claims))
+        .route("/v1/dating/safety-report", post(dating::generate_safety_report))
+
         // Reports and history (auth required)
-        .route("/api/v1/reports", get(reports::list_reports))
-        .route("/api/v1/reports/:report_id", get(reports::get_report))
-        .route("/api/v1/reports/:report_id", delete(reports::delete_report))
-        .route("/api/v1/reports/export", get(reports::export_reports))
-        
+        .route("/v1/reports", get(reports::list_reports))
+        .route("/v1/reports/:report_id", get(reports::get_report))
+        .route("/v1/reports/:report_id", delete(reports::delete_report))
+        .route("/v1/reports/export", get(reports::export_reports))
+
         // Admin endpoints (admin auth required)
-        .route("/api/v1/admin/breach-sources", get(reports::admin::list_breach_sources))
-        .route("/api/v1/admin/breach-sources", post(reports::admin::add_breach_source))
-        .route("/api/v1/admin/update-breach-data", post(reports::admin::update_breach_data))
+        .route("/v1/admin/breach-sources", get(reports::admin::list_breach_sources))
+        .route("/v1/admin/breach-sources", post(reports::admin::add_breach_source))
+        .route("/v1/admin/update-breach-data", post(reports::admin::update_breach_data))
         
         // Add middleware layers
         .layer(TimeoutLayer::new(Duration::from_secs(30)))

@@ -172,8 +172,8 @@ export default function Home() {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-      // CRITICAL: OSINT operations take 60-120 seconds, so we need a 2-minute timeout
-      const response = await fetch(`${apiUrl}/api/check`, {
+      // Step 1: Submit async job to Kallisto-OSINTer
+      const submitResponse = await fetch(`${apiUrl}/kallisto-osinter/api/check-async`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -182,22 +182,49 @@ export default function Home() {
           name: demoName,
           location: demoLocation || undefined
         }),
-        // 2-minute timeout for long-running OSINT searches
-        signal: AbortSignal.timeout(120000)
       });
 
-      if (!response.ok) {
-        throw new Error(`API returned ${response.status}: ${response.statusText}`);
+      if (!submitResponse.ok) {
+        throw new Error(`API returned ${submitResponse.status}: ${submitResponse.statusText}`);
       }
 
-      const data = (await response.json()) as DemoResult;
-      setDemoResults(data);
+      const { job_id } = await submitResponse.json();
+
+      // Step 2: Poll for results every 5 seconds
+      let attempts = 0;
+      const maxAttempts = 60; // 5 minutes max (60 * 5 seconds)
+
+      while (attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+        attempts++;
+
+        const statusResponse = await fetch(`${apiUrl}/kallisto-osinter/api/job/${job_id}`);
+
+        if (!statusResponse.ok) {
+          throw new Error(`Failed to check job status: ${statusResponse.status}`);
+        }
+
+        const jobData = await statusResponse.json();
+
+        if (jobData.status === 'completed') {
+          // Success! We have real OSINT results
+          setDemoResults(jobData.result);
+          break;
+        } else if (jobData.status === 'failed') {
+          throw new Error(jobData.error || 'OSINT analysis failed');
+        }
+        // Continue polling if status is 'pending' or 'processing'
+      }
+
+      if (attempts >= maxAttempts) {
+        throw new Error('OSINT analysis timed out after 5 minutes');
+      }
     } catch (error) {
       console.error('Demo search failed:', error);
       if (error instanceof Error) {
         if (error.name === 'TimeoutError' || error.name === 'AbortError') {
           setDemoResults({
-            error: 'Search timed out. OSINT operations can take up to 2 minutes. Please try again.'
+            error: 'Search timed out. OSINT operations can take up to 5 minutes. Please try again.'
           });
         } else {
           setDemoResults({ error: `Failed to connect to Guardr API: ${error.message}` });

@@ -5,7 +5,7 @@
 ✅ **Your old work IS saved and deployed!**
 ✅ **Frontend is live on DigitalOcean**
 ⚠️ **Backend is live but needs updated API keys**
-❌ **guardr.app domain points to deleted Vercel (404)**
+✅ **guardr.app domain points to DigitalOcean**
 
 ## What You Have on DigitalOcean RIGHT NOW
 
@@ -59,12 +59,11 @@ But Kallisto needs these (from your ~/.apikeys.zsh):
 - ✅ Updated OPENAI_API_KEY
 - ✅ Updated ANTHROPIC_API_KEY
 
-## Why guardr.app Shows 404
+## Domain Configuration
 
-Your domain DNS still points to the old Vercel deployment that you "yeeted into the sun."
+Your domain is configured to point to DigitalOcean App Platform.
 
-**Current DNS:** guardr.app → Vercel (deleted) → 404
-**Should be:** guardr.app → DigitalOcean App Platform → Your site!
+**Current DNS:** guardr.app → DigitalOcean App Platform → Your site!
 
 ## What Happened to Tonight's Work?
 
@@ -105,22 +104,19 @@ Why?
 - Demo will show loading state (which is fine)
 - Fix API keys when you have time
 
-## How to Fix DNS
+## How to Update DNS
 
 1. Go to your domain registrar (where you bought guardr.app)
 2. Find DNS settings
 3. Update CNAME record:
-   - **From:** Vercel URL (whatever it is)
-   - **To:** `guardr-api-4c7ct.ondigitalocean.app`
+   - **Value:** `guardr-api-4c7ct.ondigitalocean.app`
 4. Wait 5-60 minutes for DNS propagation
 5. Visit guardr.app → SEE YOUR SITE!
 
 ## Summary
 
-**Your work ISN'T lost - it's just scattered:**
+**Your work IS deployed on DigitalOcean:**
 - ✅ Flask backend → Deployed on DO (needs key update)
 - ✅ Frontend → Deployed on DO (working great)
 - 💻 Rust backend → Local only (not committed)
-- 🌐 Domain → Pointing to wrong place
-
-Want me to help you pick one of the three options?
+- ✅ Domain → Pointing to DigitalOcean

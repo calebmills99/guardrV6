@@ -4,7 +4,7 @@
 
 - ✅ Rust backend working locally (port 5000)
 - ✅ Next.js frontend working locally (port 3002)
-- ❌ guardr.app pointing to deleted Vercel deployment (404)
+- ✅ Deployed on DigitalOcean App Platform
 - ❌ Not authenticated with DigitalOcean CLI
 
 ## Step 1: Authenticate with DigitalOcean

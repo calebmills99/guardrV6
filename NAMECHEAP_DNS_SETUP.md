@@ -73,18 +73,11 @@ Since CNAME at root often doesn't work, use A records instead:
    - **Value:** `guardr-api-4c7ct.ondigitalocean.app`
    - **TTL:** Automatic
 
-### 5. Remove Old Vercel Records
-
-**Look for and DELETE:**
-- Any CNAME pointing to `cname.vercel-dns.com`
-- Any A records pointing to Vercel IPs (like `76.76.21.21`)
-- Any TXT records with `vc-domain-verify=...`
-
-### 6. Save Changes
+### 5. Save Changes
 1. Click **Save All Changes** button
 2. Confirm the changes
 
-### 7. Wait for DNS Propagation
+### 6. Wait for DNS Propagation
 - **Minimum:** 5-10 minutes
 - **Typical:** 15-30 minutes
 - **Maximum:** 24-48 hours (rare)
@@ -118,8 +111,7 @@ dig guardr.app +short
 ```
 
 **What you should see:**
-- Old: Points to Vercel or shows old IP
-- New: Points to DigitalOcean App IP
+- Points to DigitalOcean App IP
 
 ## When DNS is Propagated
 
@@ -168,8 +160,7 @@ dig guardr.app +short
 4. Get DO IP: `dig guardr-api-4c7ct.ondigitalocean.app +short`
 5. Add A Record: `@` → [IP address]
 6. Add A Record: `www` → [IP address]
-7. Delete old Vercel records
-8. Save and wait 15-30 minutes
+7. Save and wait 15-30 minutes
 9. Visit guardr.app 🎉
 
 Need the IP now? Run this:

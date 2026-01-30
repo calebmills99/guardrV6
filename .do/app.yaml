@@ -1,114 +1,57 @@
-# DigitalOcean App Platform Specification for Guardr
-# This file defines the deployment configuration for both the backend API and frontend
+# DigitalOcean App Platform Specification
 # Deploy with: doctl apps create --spec .do/app.yaml
-# Update with: doctl apps update <app-id> --spec .do/app.yaml
+# 
+# This is the EASIEST way to deploy - no droplet management needed!
+# DigitalOcean handles scaling, SSL, and container orchestration.
 
 name: guardr
+
 region: nyc
 
-# Backend API (Rust)
 services:
   - name: api
-    # Use Dockerfile for Rust backend
-    dockerfile_path: Dockerfile
-    source_dir: /
     github:
       repo: calebmills99/guardrV6
       branch: main
       deploy_on_push: true
     
-    # Health check
-    health_check:
-      http_path: /health
-      initial_delay_seconds: 60
-      period_seconds: 10
-      timeout_seconds: 5
-      success_threshold: 1
-      failure_threshold: 3
+    dockerfile_path: Dockerfile
     
-    # Resource allocation
-    instance_count: 1
-    instance_size_slug: basic-xs  # 512MB RAM, $5/mo
-    
-    # Port configuration
     http_port: 5000
     
-    # Environment variables (set these in DO dashboard or via doctl)
+    instance_size_slug: basic-xxs  # $5/mo - upgrade as needed
+    instance_count: 1
+    
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 30
+      period_seconds: 10
+    
+    routes:
+      - path: /
+    
     envs:
       - key: RUST_LOG
         value: info
       - key: DATABASE_URL
-        value: sqlite:///app/data/guardr.db
-      - key: GUARDR__SERVER__HOST
-        value: 0.0.0.0
-      - key: GUARDR__SERVER__PORT
-        value: "5000"
-      - key: GUARDR__SECURITY__JWT_SECRET
-        scope: RUN_TIME
-        type: SECRET
-      - key: GUARDR__SECURITY__SESSION_SECRET
-        scope: RUN_TIME
-        type: SECRET
-      - key: GUARDR__API__RATE_LIMIT_PER_MINUTE
-        value: "60"
-    
-    # Routes
-    routes:
-      - path: /api
-      - path: /health
+        value: /app/data/guardr.db
+      # Add secrets via DigitalOcean dashboard, not here!
+      # - key: API_KEY
+      #   type: SECRET
 
-# Frontend (Next.js)
-static_sites:
-  - name: frontend
-    source_dir: /website
-    github:
-      repo: calebmills99/guardrV6
-      branch: main
-      deploy_on_push: true
-    
-    # Build configuration
-    build_command: npm install && npm run build
-    output_dir: .next
-    
-    # Environment variables for build
-    envs:
-      - key: NEXT_PUBLIC_API_URL
-        value: ${api.PUBLIC_URL}
-      - key: NODE_ENV
-        value: production
-    
-    # Routes
-    routes:
-      - path: /
-
-# Database - Using SQLite in persistent storage
-# For production, consider upgrading to DigitalOcean Managed Database
+# Optional: Add a managed database instead of SQLite
 # databases:
 #   - name: guardr-db
 #     engine: PG
 #     version: "15"
-#     size: db-s-1vcpu-1gb
+#     size: db-s-dev-database  # $15/mo
 
-# Alerting (optional, configure in DO dashboard)
-alerts:
-  - rule: DEPLOYMENT_FAILED
-  - rule: DOMAIN_FAILED
-
-# Static configuration
-ingress:
-  rules:
-    - match:
-        path:
-          prefix: /api
-      component:
-        name: api
-    - match:
-        path:
-          prefix: /health
-      component:
-        name: api
-    - match:
-        path:
-          prefix: /
-      component:
-        name: frontend
+# Optional: Add a static site for the frontend
+# static_sites:
+#   - name: website
+#     github:
+#       repo: calebmills99/guardrV6
+#       branch: main
+#     source_dir: website
+#     build_command: npm run build
+#     output_dir: out

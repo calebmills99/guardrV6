@@ -1,0 +1,110 @@
+# 🎭 Lady Guardr's Deployment Pipeline
+# Auto-deploys to DigitalOcean when you push to main
+
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Manual trigger button
+
+env:
+  REGISTRY: registry.digitalocean.com
+  IMAGE_NAME: guardr-registry/guardr-api
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  # BUILD & TEST
+  # ═══════════════════════════════════════════════════════════════
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-action@stable
+        with:
+          components: clippy
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run clippy
+        run: cargo clippy -- -D warnings
+
+      - name: Run tests
+        run: cargo test
+
+  # ═══════════════════════════════════════════════════════════════
+  # BUILD & PUSH DOCKER IMAGE
+  # ═══════════════════════════════════════════════════════════════
+  docker:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry
+        run: doctl registry login
+
+      - name: Build and push image
+        run: |
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+  # ═══════════════════════════════════════════════════════════════
+  # DEPLOY TO DROPLET
+  # ═══════════════════════════════════════════════════════════════
+  deploy:
+    name: Deploy to Droplet
+    runs-on: ubuntu-latest
+    needs: docker
+    
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: guardr
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Pull latest image
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            
+            # Stop old container
+            docker stop guardr-api || true
+            docker rm guardr-api || true
+            
+            # Start new container
+            docker run -d \
+              --name guardr-api \
+              --restart unless-stopped \
+              -p 5000:5000 \
+              -v /app/data:/app/data \
+              --env-file /app/.env \
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            
+            # Cleanup old images
+            docker image prune -f
+
+      - name: Notify success
+        run: echo "✨ Deployed successfully, darling! ✨"

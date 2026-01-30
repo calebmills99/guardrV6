@@ -6,8 +6,8 @@ port = 5000
 request_timeout_seconds = 120  # Extended for OSINT operations
 
 [database]
-# Use relative path so it works in container's working directory
-sqlite_url = "sqlite:./data/guardr.db?mode=rwc"
+# Absolute path to SQLite in container (mode=rwc creates if missing)
+sqlite_url = "sqlite:/app/data/guardr.db?mode=rwc"
 max_connections = 20
 min_connections = 1
 acquire_timeout_seconds = 30

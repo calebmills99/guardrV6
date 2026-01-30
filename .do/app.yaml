@@ -34,18 +34,18 @@ services:
       - key: RUST_LOG
         value: info
       - key: DATABASE_URL
-        value: "sqlite:./data/guardr.db?mode=rwc"
+        value: "sqlite:/app/data/guardr.db?mode=rwc"
       - key: GUARDR__DATABASE__SQLITE_URL
-        value: "sqlite:./data/guardr.db?mode=rwc"
+        value: "sqlite:/app/data/guardr.db?mode=rwc"
       # Add secrets via DigitalOcean dashboard, not here!
       # - key: API_KEY
       #   type: SECRET
 
-# Optional: Add a managed database instead of SQLite
+# Optional: Add a managed PostgreSQL database (requires code changes)
 # databases:
 #   - name: guardr-db
 #     engine: PG
-#     version: "15"
+#     version: "16"
 #     size: db-s-dev-database  # $15/mo
 
 # Optional: Add a static site for the frontend

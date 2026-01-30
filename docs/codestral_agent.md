@@ -44,7 +44,7 @@ Behavioral rules:
 
 ## ✅ Python Snippet (Codestral + GitHub Models)
 
-> **Note:** This uses GitHub Models and `GITHUB_TOKEN` for authentication, as required by the snippet you provided.
+> **Note:** This uses GitHub Models and `GITHUB_TOKEN` for authentication.
 
 ```python
 """Run this model in Python

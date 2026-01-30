@@ -65,6 +65,9 @@ hex = "0.4"
 # Additional utilities
 futures = "0.3"
 
+# Pin time crate to avoid Rust 1.88 requirement
+time = "=0.3.41"
+
 
 [[bin]]
 name = "guardr"

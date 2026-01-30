@@ -29,8 +29,8 @@ WORKDIR /workspace
 COPY scripts/ /workspace/scripts/
 RUN chmod +x /workspace/scripts/*.sh
 
-# Copy app spec
-COPY ..//.do/app.yaml /workspace/.do/app.yaml 2>/dev/null || true
+# App spec is mounted via docker-compose volume at runtime
+# The .do/app.yaml is available at /project/.do/app.yaml
 
 # Set up entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/

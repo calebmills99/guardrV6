@@ -1,0 +1,123 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual trigger
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      
+      - name: Cache Cargo
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      
+      - name: Run tests
+        run: cargo test --verbose
+      
+      - name: Check formatting
+        run: cargo fmt -- --check
+      
+      - name: Run clippy
+        run: cargo clippy -- -D warnings
+
+  deploy:
+    name: Deploy to DigitalOcean
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      
+      - name: Check for existing app
+        id: check_app
+        run: |
+          APP_ID=$(doctl apps list --format ID,Spec.Name --no-header | grep -w "guardr" | awk '{print $1}' || true)
+          if [ -z "$APP_ID" ]; then
+            echo "exists=false" >> $GITHUB_OUTPUT
+          else
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "app_id=$APP_ID" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create new app
+        if: steps.check_app.outputs.exists == 'false'
+        run: |
+          echo "Creating new Guardr app on DigitalOcean..."
+          doctl apps create --spec .do/app.yaml --wait
+      
+      - name: Update existing app
+        if: steps.check_app.outputs.exists == 'true'
+        run: |
+          echo "Updating existing Guardr app (ID: ${{ steps.check_app.outputs.app_id }})..."
+          doctl apps update ${{ steps.check_app.outputs.app_id }} --spec .do/app.yaml --wait
+      
+      - name: Get app URL
+        run: |
+          APP_ID=$(doctl apps list --format ID,Spec.Name --no-header | grep -w "guardr" | awk '{print $1}')
+          APP_URL=$(doctl apps get $APP_ID --format DefaultIngress --no-header)
+          echo "🚀 Deployment complete!"
+          echo "App URL: $APP_URL"
+          echo "APP_URL=$APP_URL" >> $GITHUB_ENV
+      
+      - name: Comment PR with deployment info
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 Deployed to DigitalOcean!\n\nApp URL: ${{ env.APP_URL }}'
+            })
+
+  notify:
+    name: Deployment Notification
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Notify success
+        if: needs.deploy.result == 'success'
+        run: |
+          echo "✅ Deployment succeeded!"
+          echo "Guardr is now live on DigitalOcean"
+      
+      - name: Notify failure
+        if: needs.deploy.result == 'failure'
+        run: |
+          echo "❌ Deployment failed!"
+          exit 1

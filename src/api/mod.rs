@@ -4,8 +4,6 @@
 use axum::{
     routing::{get, post, put, delete},
     Router,
-    http::StatusCode,
-    middleware,
 };
 use serde::{Deserialize, Serialize};
 use tower_http::{

@@ -2,12 +2,10 @@ use axum::{extract::State, Json};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use std::collections::HashSet;
-use tracing::{info, error};
+use tracing::info;
 use validator::Validate;
 
 use crate::auth::AuthenticatedUser;
-use crate::database::Database;
 use crate::errors::AppError;
 use crate::state::AppState;
 use crate::weak_pass;

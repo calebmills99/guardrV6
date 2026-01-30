@@ -5,7 +5,6 @@ use tracing::info;
 use uuid::Uuid;
 
 use crate::auth::AuthenticatedUser;
-use crate::database::Database;
 use crate::errors::AppError;
 use crate::state::AppState;
 

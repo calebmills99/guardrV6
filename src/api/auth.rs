@@ -3,8 +3,7 @@ use chrono::Utc;
 use tracing::{info, warn};
 use validator::Validate;
 
-use crate::auth::{AuthService, RegisterRequest, LoginRequest, AuthResponse, UserProfile, UsageStats, RefreshTokenRequest};
-use crate::database::Database;
+use crate::auth::{RegisterRequest, LoginRequest, AuthResponse, UserProfile, UsageStats, RefreshTokenRequest};
 use crate::errors::{AppError, validation_error_response};
 use crate::state::AppState;
 

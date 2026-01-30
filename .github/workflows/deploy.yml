@@ -92,11 +92,14 @@ jobs:
           GUARDR_SERVER__HOST: ${{ secrets.GUARDR_SERVER__HOST }}
           GUARDR_SERVER__PORT: ${{ secrets.GUARDR_SERVER__PORT }}
           GUARDR_LOGGING__LEVEL: ${{ secrets.GUARDR_LOGGING__LEVEL }}
+          HIBP_API_KEY: ${{ secrets.HIBP_API_KEY }}
+          INTELX_API_KEY: ${{ secrets.INTELX_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         with:
           host: ${{ secrets.DROPLET_IP }}
           username: guardr
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: MONGODB_URL,DATABASE_URL,JWT_SECRET,REDIS_URL,ENCRYPTION_KEY,GUARDR_SERVER__HOST,GUARDR_SERVER__PORT,GUARDR_LOGGING__LEVEL
+          envs: MONGODB_URL,DATABASE_URL,JWT_SECRET,REDIS_URL,ENCRYPTION_KEY,GUARDR_SERVER__HOST,GUARDR_SERVER__PORT,GUARDR_LOGGING__LEVEL,HIBP_API_KEY,INTELX_API_KEY,GEMINI_API_KEY
           script: |
             # Pull latest image
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
@@ -119,6 +122,9 @@ jobs:
               -e GUARDR_SERVER__HOST="$GUARDR_SERVER__HOST" \
               -e GUARDR_SERVER__PORT="$GUARDR_SERVER__PORT" \
               -e GUARDR_LOGGING__LEVEL="$GUARDR_LOGGING__LEVEL" \
+              -e HIBP_API_KEY="$HIBP_API_KEY" \
+              -e INTELX_API_KEY="$INTELX_API_KEY" \
+              -e GEMINI_API_KEY="$GEMINI_API_KEY" \
               ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             
             # Cleanup old images

@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 use tracing::info;
 
 use crate::auth::AuthenticatedUser;
-use crate::database::Database;
 use crate::errors::AppError;
 use crate::state::AppState;
 

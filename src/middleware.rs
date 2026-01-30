@@ -6,11 +6,8 @@ use axum::{
 };
 use governor::{Quota, RateLimiter};
 use std::{
-    collections::HashMap,
-    net::IpAddr,
     num::NonZeroU32,
-    sync::{Arc, Mutex},
-    time::Duration,
+    sync::Arc,
 };
 use tracing::{info, warn};
 

@@ -3,23 +3,21 @@ use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use argon2::password_hash::{rand_core::OsRng, SaltString};
 use axum::{
     async_trait,
-    extract::{FromRequest, FromRequestParts, Request, State},
-    http::{header::AUTHORIZATION, request::Parts, StatusCode},
-    Json, RequestExt,
+    extract::{FromRequest, FromRequestParts, Request},
+    http::{header::AUTHORIZATION, request::Parts},
 };
 use base64::{Engine as _, engine::general_purpose};
 use chrono::{DateTime, Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
-use rand::{distributions::Alphanumeric, Rng};
+use rand::Rng;
 use redis::AsyncCommands;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use std::collections::HashSet;
 use uuid::Uuid;
 use validator::{Validate, ValidationError};
 
 use crate::config::Settings;
-use crate::database::{Database, User, UserSubscriptionTier};
+use crate::database::{User, UserSubscriptionTier};
 use crate::errors::AppError;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

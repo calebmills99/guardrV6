@@ -117,3 +117,6 @@ settings.json
 target/
 node_modules/
 *.env.local
+
+# DigitalOcean API spec (contains example webhook URLs that trigger secret scanning)
+doctl/DigitalOcean-public.v2.yaml

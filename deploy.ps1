@@ -36,6 +36,27 @@ param(
 $AppName = "guardr"
 $AppSpecPath = ".do/app.yaml"
 
+# doctl path - update this if doctl is installed elsewhere
+$script:DoctlExe = $null
+
+# Find doctl executable
+if (Get-Command doctl -ErrorAction SilentlyContinue) {
+    $script:DoctlExe = "doctl"
+} elseif (Test-Path "C:\tools\Doctl\doctl.exe") {
+    $script:DoctlExe = "C:\tools\Doctl\doctl.exe"
+} elseif (Test-Path "C:\tools\doctl\doctl.exe") {
+    $script:DoctlExe = "C:\tools\doctl\doctl.exe"
+}
+
+function Invoke-Doctl {
+    if (-not $script:DoctlExe) {
+        Write-Error-Custom "doctl not found! Install with: winget install DigitalOcean.Doctl"
+        Write-Host "Or update `$DoctlExe path in this script"
+        exit 1
+    }
+    & $script:DoctlExe @args
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # HELPER FUNCTIONS
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -70,13 +91,12 @@ function Write-Error-Custom {
 }
 
 function Test-DoctlInstalled {
-    $null = Get-Command doctl -ErrorAction SilentlyContinue
-    return $?
+    return $null -ne $script:DoctlExe
 }
 
 function Test-DoctlAuthenticated {
     try {
-        $null = doctl account get 2>&1
+        $null = Invoke-Doctl account get 2>&1
         return $LASTEXITCODE -eq 0
     } catch {
         return $false
@@ -84,7 +104,7 @@ function Test-DoctlAuthenticated {
 }
 
 function Get-AppId {
-    $apps = doctl apps list --format "ID,Spec.Name" --no-header 2>&1
+    $apps = Invoke-Doctl apps list --format "ID,Spec.Name" --no-header 2>&1
     foreach ($line in $apps -split "`n") {
         if ($line -match "guardr") {
             return ($line -split "\s+")[0]
@@ -127,7 +147,7 @@ function Invoke-Deploy {
             if ($content -match "DO_API_TOKEN=(.+)") {
                 $token = $Matches[1].Trim()
                 Write-Step "Found token in .do.env, authenticating..."
-                doctl auth init -t $token
+                Invoke-Doctl auth init -t $token
             }
         } else {
             Write-Host "Run: doctl auth init"
@@ -143,11 +163,11 @@ function Invoke-Deploy {
     
     if ($appId) {
         Write-Fancy "Found existing app (ID: $appId). Updating..." "Cyan"
-        doctl apps update $appId --spec $AppSpecPath --wait
+        Invoke-Doctl apps update $appId --spec $AppSpecPath --wait
         Write-Success "App updated!"
     } else {
         Write-Fancy "No existing app found. Creating new app..." "Cyan"
-        doctl apps create --spec $AppSpecPath --wait
+        Invoke-Doctl apps create --spec $AppSpecPath --wait
         $appId = Get-AppId
         Write-Success "App created! (ID: $appId)"
     }
@@ -156,11 +176,11 @@ function Invoke-Deploy {
     Write-Header "Deployment Complete!"
     
     Write-Step "App Details:"
-    doctl apps get $appId --format ID,Spec.Name,DefaultIngress,Phase
+    Invoke-Doctl apps get $appId --format ID,Spec.Name,DefaultIngress,Phase
     
     Write-Host ""
     Write-Fancy "Your app URL:" "Cyan"
-    $url = doctl apps get $appId --format DefaultIngress --no-header
+    $url = Invoke-Doctl apps get $appId --format DefaultIngress --no-header
     Write-Fancy "  $url" "Green"
     
     Write-Host ""
@@ -181,7 +201,7 @@ function Get-Status {
         exit 1
     }
     
-    doctl apps get $appId
+    Invoke-Doctl apps get $appId
 }
 
 function Get-Logs {
@@ -194,7 +214,7 @@ function Get-Logs {
     }
     
     Write-Fancy "Streaming logs (Ctrl+C to stop)..." "Yellow"
-    doctl apps logs $appId --type run --follow --component api
+    Invoke-Doctl apps logs $appId --type run --follow --component api
 }
 
 function Invoke-Restart {
@@ -207,7 +227,7 @@ function Invoke-Restart {
     }
     
     Write-Step "Triggering new deployment..."
-    doctl apps update $appId --spec $AppSpecPath
+    Invoke-Doctl apps update $appId --spec $AppSpecPath
     Write-Success "Restart triggered!"
 }
 
@@ -218,7 +238,7 @@ function Get-Url {
         exit 1
     }
     
-    $url = doctl apps get $appId --format DefaultIngress --no-header
+    $url = Invoke-Doctl apps get $appId --format DefaultIngress --no-header
     Write-Host $url
 }
 

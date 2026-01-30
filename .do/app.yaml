@@ -34,7 +34,7 @@ services:
       - key: RUST_LOG
         value: info
       - key: DATABASE_URL
-        value: /app/data/guardr.db
+        value: "sqlite:///app/data/guardr.db?mode=rwc"
       # Add secrets via DigitalOcean dashboard, not here!
       # - key: API_KEY
       #   type: SECRET

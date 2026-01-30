@@ -14,13 +14,13 @@ Requirements:
     pip install mistralai>=1.0.0
 
 Environment:
-    GITHUB_TOKEN - Your GitHub Personal Access Token
+    GH_TOKEN - Your GitHub Personal Access Token
                    Get one at: https://github.com/settings/tokens
 """
 
 import os
 import sys
-from mistralai import Mistral, UserMessage, SystemMessage
+from mistralai import Mistral
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # CONFIGURATION
@@ -51,13 +51,13 @@ SERVER_URL = "https://models.github.ai/inference"
 
 def get_client():
     """Initialize the Mistral client with GitHub Models."""
-    token = os.environ.get("GITHUB_TOKEN")
+    token = os.environ.get("GH_TOKEN")
     if not token:
-        print("❌ GITHUB_TOKEN environment variable not set!")
+        print("❌ GH_TOKEN environment variable not set!")
         print()
         print("To fix this:")
         print("  1. Get a token at: https://github.com/settings/tokens")
-        print("  2. Set it with: $env:GITHUB_TOKEN = 'ghp_your_token_here'")
+        print("  2. Set it with: $env:GH_TOKEN = 'ghp_your_token_here'")
         sys.exit(1)
     
     return Mistral(api_key=token, server_url=SERVER_URL)
@@ -68,12 +68,15 @@ def chat(client, user_message: str, conversation: list = None) -> str:
     if conversation is None:
         conversation = []
     
-    messages = [SystemMessage(SYSTEM_PROMPT)] + conversation + [UserMessage(user_message)]
+    # Build messages using dict format (required by current SDK)
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages.extend(conversation)
+    messages.append({"role": "user", "content": user_message})
     
-    response = client.chat(
+    response = client.chat.complete(
         model=MODEL,
         messages=messages,
-        temperature=0.7,
+        temperature=0.9,
         max_tokens=1500,
         top_p=1.0,
     )
@@ -111,8 +114,8 @@ def interactive_mode(client):
             print(f"\n🎭 Lady Guardr: {response}\n")
             
             # Keep conversation history (last 10 exchanges)
-            conversation.append(UserMessage(user_input))
-            conversation.append(SystemMessage(response))
+            conversation.append({"role": "user", "content": user_input})
+            conversation.append({"role": "assistant", "content": response})
             if len(conversation) > 20:
                 conversation = conversation[-20:]
                 

@@ -2,7 +2,9 @@ use anyhow::{anyhow, Result};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Sqlite, SqlitePool, Row, FromRow};
+use sqlx::sqlite::SqliteConnectOptions;
 use std::str::FromStr;
+use std::path::Path;
 use uuid::Uuid;
 
 use crate::config::Settings;
@@ -14,7 +16,29 @@ pub struct Database {
 
 impl Database {
     pub async fn new(settings: &Settings) -> Result<Self> {
-        let pool = SqlitePool::connect(&settings.database.sqlite_url).await?;
+        // Parse the database URL and ensure directory exists
+        let db_url = &settings.database.sqlite_url;
+        
+        // Extract path from sqlite URL (e.g., "sqlite:/app/data/guardr.db" -> "/app/data/guardr.db")
+        let db_path = db_url
+            .strip_prefix("sqlite:")
+            .unwrap_or(db_url)
+            .split('?')
+            .next()
+            .unwrap_or("");
+        
+        // Create parent directory if it doesn't exist
+        if let Some(parent) = Path::new(db_path).parent() {
+            if !parent.as_os_str().is_empty() {
+                std::fs::create_dir_all(parent).ok(); // Ignore errors, let SQLite handle it
+            }
+        }
+        
+        // Connect with create_if_missing option
+        let options = SqliteConnectOptions::from_str(db_url)?
+            .create_if_missing(true);
+        
+        let pool = SqlitePool::connect_with(options).await?;
         
         // Run migrations
         sqlx::migrate!("./migrations").run(&pool).await?;

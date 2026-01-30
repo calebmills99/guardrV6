@@ -1,0 +1,246 @@
+# DigitalOcean API Essentials for Guardr Deployment
+# Curated "Greatest Hits" - the 20 most useful endpoints
+# Full spec: https://docs.digitalocean.com/reference/api/
+
+openapi: 3.0.0
+info:
+  title: DigitalOcean API Essentials
+  version: '2.0'
+  description: >
+    Curated subset of the DigitalOcean API for Guardr deployment.
+    Covers droplets, firewalls, networking, and monitoring.
+
+servers:
+  - url: https://api.digitalocean.com
+
+security:
+  - bearer_auth: []
+
+components:
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+      description: Use your DigitalOcean API token from .do.env
+
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # ACCOUNT & AUTH
+  # ═══════════════════════════════════════════════════════════════
+  /v2/account:
+    get:
+      summary: Get Account Info
+      description: Verify your API token and get account details
+      tags: [Account]
+
+  /v2/account/keys:
+    get:
+      summary: List SSH Keys
+      description: Get all SSH keys on your account
+      tags: [Account]
+    post:
+      summary: Add SSH Key
+      description: Upload a new SSH public key
+      tags: [Account]
+
+  # ═══════════════════════════════════════════════════════════════
+  # DROPLETS (Your Servers)
+  # ═══════════════════════════════════════════════════════════════
+  /v2/droplets:
+    get:
+      summary: List All Droplets
+      description: Get all your droplets
+      tags: [Droplets]
+    post:
+      summary: Create Droplet
+      description: Spin up a new server
+      tags: [Droplets]
+      requestBody:
+        content:
+          application/json:
+            example:
+              name: guardr-prod
+              region: nyc3
+              size: s-2vcpu-4gb
+              image: ubuntu-22-04-x64
+              ssh_keys: [12345]
+              tags: [guardr, production]
+
+  /v2/droplets/{droplet_id}:
+    get:
+      summary: Get Droplet
+      description: Get details for a specific droplet
+      tags: [Droplets]
+    delete:
+      summary: Delete Droplet
+      description: Destroy a droplet (irreversible!)
+      tags: [Droplets]
+
+  /v2/droplets/{droplet_id}/actions:
+    post:
+      summary: Droplet Actions
+      description: Power on/off, reboot, snapshot, resize
+      tags: [Droplets]
+      requestBody:
+        content:
+          application/json:
+            examples:
+              power_off:
+                value: { type: power_off }
+              power_on:
+                value: { type: power_on }
+              reboot:
+                value: { type: reboot }
+              snapshot:
+                value: { type: snapshot, name: guardr-backup }
+
+  # ═══════════════════════════════════════════════════════════════
+  # FIREWALLS (Security)
+  # ═══════════════════════════════════════════════════════════════
+  /v2/firewalls:
+    get:
+      summary: List Firewalls
+      description: Get all firewall configurations
+      tags: [Firewalls]
+    post:
+      summary: Create Firewall
+      description: Set up firewall rules for your droplet
+      tags: [Firewalls]
+      requestBody:
+        content:
+          application/json:
+            example:
+              name: guardr-firewall
+              droplet_ids: [123456]
+              inbound_rules:
+                - protocol: tcp
+                  ports: "22"
+                  sources: { addresses: ["0.0.0.0/0"] }
+                - protocol: tcp
+                  ports: "80"
+                  sources: { addresses: ["0.0.0.0/0"] }
+                - protocol: tcp
+                  ports: "443"
+                  sources: { addresses: ["0.0.0.0/0"] }
+              outbound_rules:
+                - protocol: tcp
+                  ports: all
+                  destinations: { addresses: ["0.0.0.0/0"] }
+
+  /v2/firewalls/{firewall_id}:
+    get:
+      summary: Get Firewall
+      tags: [Firewalls]
+    put:
+      summary: Update Firewall
+      tags: [Firewalls]
+    delete:
+      summary: Delete Firewall
+      tags: [Firewalls]
+
+  # ═══════════════════════════════════════════════════════════════
+  # NETWORKING
+  # ═══════════════════════════════════════════════════════════════
+  /v2/domains:
+    get:
+      summary: List Domains
+      description: Get all domains on your account
+      tags: [Domains]
+    post:
+      summary: Add Domain
+      description: Add a domain (e.g., guardr.app)
+      tags: [Domains]
+
+  /v2/domains/{domain_name}/records:
+    get:
+      summary: List DNS Records
+      tags: [Domains]
+    post:
+      summary: Create DNS Record
+      description: Add A, AAAA, CNAME, etc. records
+      tags: [Domains]
+      requestBody:
+        content:
+          application/json:
+            example:
+              type: A
+              name: "@"
+              data: 123.45.67.89
+              ttl: 3600
+
+  /v2/floating_ips:
+    get:
+      summary: List Reserved IPs
+      description: Static IPs that survive droplet destruction
+      tags: [Networking]
+    post:
+      summary: Create Reserved IP
+      tags: [Networking]
+
+  /v2/load_balancers:
+    get:
+      summary: List Load Balancers
+      tags: [Networking]
+    post:
+      summary: Create Load Balancer
+      description: Distribute traffic across droplets
+      tags: [Networking]
+
+  /v2/vpcs:
+    get:
+      summary: List VPCs
+      description: Virtual private clouds for isolation
+      tags: [Networking]
+
+  # ═══════════════════════════════════════════════════════════════
+  # REFERENCE DATA
+  # ═══════════════════════════════════════════════════════════════
+  /v2/regions:
+    get:
+      summary: List Regions
+      description: Available datacenter regions (nyc3, sfo3, etc.)
+      tags: [Reference]
+
+  /v2/sizes:
+    get:
+      summary: List Droplet Sizes
+      description: Available CPU/RAM configurations and pricing
+      tags: [Reference]
+
+  /v2/images:
+    get:
+      summary: List Images
+      description: OS images (ubuntu-22-04-x64, etc.)
+      tags: [Reference]
+
+  # ═══════════════════════════════════════════════════════════════
+  # STORAGE & BACKUPS
+  # ═══════════════════════════════════════════════════════════════
+  /v2/volumes:
+    get:
+      summary: List Volumes
+      description: Block storage volumes
+      tags: [Storage]
+    post:
+      summary: Create Volume
+      description: Add persistent block storage to a droplet
+      tags: [Storage]
+
+  /v2/snapshots:
+    get:
+      summary: List Snapshots
+      description: Droplet and volume backups
+      tags: [Storage]
+
+  # ═══════════════════════════════════════════════════════════════
+  # MONITORING
+  # ═══════════════════════════════════════════════════════════════
+  /v2/monitoring/alerts:
+    get:
+      summary: List Alerts
+      description: CPU, memory, disk usage alerts
+      tags: [Monitoring]
+    post:
+      summary: Create Alert
+      description: Set up resource usage notifications
+      tags: [Monitoring]

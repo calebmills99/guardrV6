@@ -28,8 +28,8 @@ services:
       period_seconds: 10
     
     routes:
-      - path: /
-    
+      - path: /api
+
     envs:
       - key: RUST_LOG
         value: info
@@ -48,12 +48,20 @@ services:
 #     version: "16"
 #     size: db-s-dev-database  # $15/mo
 
-# Optional: Add a static site for the frontend
-# static_sites:
-#   - name: website
-#     github:
-#       repo: calebmills99/guardrV6
-#       branch: main
-#     source_dir: website
-#     build_command: npm run build
-#     output_dir: out
+# Frontend website
+static_sites:
+  - name: website
+    github:
+      repo: calebmills99/guardrV6
+      branch: main
+      deploy_on_push: true
+    source_dir: website
+    build_command: npm install && npm run build
+    output_dir: out
+    routes:
+      - path: /
+    domains:
+      - domain: guardr.app
+        type: PRIMARY
+      - domain: www.guardr.app
+        type: ALIAS

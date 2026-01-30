@@ -12,6 +12,7 @@ pub struct Settings {
     pub security: SecurityConfig,
     pub logging: LoggingConfig,
     pub rate_limiting: RateLimitConfig,
+    pub osint: OsintConfig,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -80,6 +81,13 @@ pub struct RateLimitConfig {
     pub enterprise_multiplier: u32,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct OsintConfig {
+    pub hibp_api_key: Option<String>,
+    pub intelx_api_key: Option<String>,
+    pub gemini_api_key: Option<String>,
+}
+
 impl Default for Settings {
     fn default() -> Self {
         Self {
@@ -135,6 +143,11 @@ impl Default for Settings {
                 premium_multiplier: 5,
                 enterprise_multiplier: 20,
             },
+            osint: OsintConfig {
+                hibp_api_key: None,
+                intelx_api_key: None,
+                gemini_api_key: None,
+            },
         }
     }
 }
@@ -188,6 +201,18 @@ impl Settings {
         
         if let Ok(encryption_key) = env::var("ENCRYPTION_KEY") {
             settings.security.encryption_key = encryption_key;
+        }
+
+        if let Ok(hibp_key) = env::var("HIBP_API_KEY") {
+            settings.osint.hibp_api_key = Some(hibp_key);
+        }
+
+        if let Ok(intelx_key) = env::var("INTELX_API_KEY") {
+            settings.osint.intelx_api_key = Some(intelx_key);
+        }
+
+        if let Ok(gemini_key) = env::var("GEMINI_API_KEY") {
+            settings.osint.gemini_api_key = Some(gemini_key);
         }
 
         Ok(settings)

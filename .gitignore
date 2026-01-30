@@ -92,8 +92,8 @@ venv/
 .venv
 
 # Rust
-Cargo.lock
-# Keep Cargo.lock for applications, uncomment for libraries
+# Cargo.lock - INCLUDED for applications (reproducible builds)
+# Uncomment below for libraries:
 # Cargo.lock
 
 # Additional Security Patterns

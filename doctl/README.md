@@ -16,7 +16,33 @@ Complete guide for deploying Guardr to DigitalOcean using App Platform or Drople
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Method 1: Docker (Recommended for Windows/Cross-Platform)
+
+**Best for:** Windows users, cross-platform teams, consistent environment
+
+1. **Install Docker Desktop**: [Download here](https://www.docker.com/products/docker-desktop)
+
+2. **Configure API Token**:
+   ```bash
+   cd doctl
+   cp .do.env.example .do.env
+   # Edit .do.env and add your DigitalOcean API token
+   ```
+
+3. **Deploy**:
+   ```bash
+   # Windows (PowerShell/CMD)
+   .\deploy.sh build
+   .\deploy.sh deploy
+   
+   # Windows (Git Bash), macOS, Linux
+   ./deploy.sh build
+   ./deploy.sh deploy
+   ```
+
+### Method 2: Native Installation
+
+**Best for:** macOS/Linux users who prefer native tools
 
 1. **DigitalOcean Account**: [Sign up here](https://cloud.digitalocean.com/registrations/new)
 2. **doctl CLI**: Install the DigitalOcean CLI tool
@@ -33,17 +59,16 @@ Complete guide for deploying Guardr to DigitalOcean using App Platform or Drople
 
 3. **API Token**: Get from [DigitalOcean API Tokens](https://cloud.digitalocean.com/account/api/tokens)
 
-### Authenticate
+4. **Authenticate**:
+   ```bash
+   doctl auth init
+   # Paste your API token when prompted
+   ```
 
-```bash
-doctl auth init
-# Paste your API token when prompted
-```
-
-Verify authentication:
-```bash
-doctl account get
-```
+5. **Verify**:
+   ```bash
+   doctl account get
+   ```
 
 ## 📁 Files Overview
 
@@ -52,6 +77,10 @@ doctl account get
 | `.do/app.yaml` | App Platform deployment specification |
 | `do-api-essentials.yaml` | Curated API endpoints reference |
 | `.do.env` | Your API token (create locally, git-ignored) |
+| `Dockerfile` | Docker container for cross-platform deployment |
+| `docker-compose.yml` | Docker Compose configuration |
+| `docker-entrypoint.sh` | Container entrypoint script |
+| `deploy.sh` | Quick deployment wrapper (works on all platforms) |
 | `scripts/01-deploy-app.sh` | Automated deployment to App Platform |
 | `scripts/02-setup-secrets.sh` | Generate and configure secrets |
 | `scripts/03-manage-app.sh` | App management commands |
@@ -78,15 +107,83 @@ Add these secrets to your GitHub repository:
    - **Name**: `DIGITALOCEAN_ACCESS_TOKEN`
    - **Value**: Your DigitalOcean API token
 
+## 🐳 Docker Deployment (Cross-Platform)
+
+**Perfect for Windows users and cross-platform teams!**
+
+The Docker container includes all necessary tools (doctl, bash, git, openssl) and works identically on Windows, macOS, and Linux.
+
+### Quick Start with Docker
+
+```bash
+# 1. Navigate to doctl directory
+cd doctl
+
+# 2. Create your .do.env file
+cp .do.env.example .do.env
+# Edit .do.env and add your DO_API_TOKEN
+
+# 3. Build the container (first time only)
+./deploy.sh build
+
+# 4. Deploy to DigitalOcean
+./deploy.sh deploy
+```
+
+### Docker Commands
+
+```bash
+# Deploy app
+./deploy.sh deploy
+
+# Generate secrets
+./deploy.sh secrets
+
+# View app status
+./deploy.sh status
+
+# View logs
+./deploy.sh logs api
+
+# Restart app
+./deploy.sh restart
+
+# Get app URL
+./deploy.sh url
+
+# Create droplet
+./deploy.sh droplet
+
+# Interactive shell
+./deploy.sh shell
+
+# Clean up containers
+./deploy.sh clean
+```
+
+### Windows Users
+
+The `deploy.sh` script works in:
+- **Git Bash** (recommended): `./deploy.sh deploy`
+- **PowerShell**: `.\deploy.sh deploy`
+- **CMD**: `bash deploy.sh deploy`
+
 ## 🎯 Deployment Methods
 
 ### App Platform (Recommended)
 
 **Best for:** Quick deployment, automatic SSL, managed infrastructure
 
-#### Automated Deployment
+#### Automated Deployment with Docker
 
-Use our deployment script:
+```bash
+cd doctl
+./deploy.sh deploy
+```
+
+#### Automated Deployment (Native)
+
+Use our deployment script directly:
 
 ```bash
 ./doctl/scripts/01-deploy-app.sh

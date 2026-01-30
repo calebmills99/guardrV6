@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  deploy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: guardr-deploy-tools:latest
+    container_name: guardr-deploy
+    volumes:
+      # Mount the entire project for access to .do/app.yaml
+      - ..:/project:ro
+      # Mount scripts directory
+      - ./scripts:/workspace/scripts:ro
+      # Persist doctl authentication
+      - doctl-config:/root/.config/doctl
+    environment:
+      # Set your DigitalOcean API token here or in .do.env
+      - DO_API_TOKEN=${DO_API_TOKEN}
+    env_file:
+      # Load environment variables from .do.env if it exists
+      - .do.env
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+
+volumes:
+  # Persist doctl configuration between runs
+  doctl-config:
+    name: guardr-doctl-config

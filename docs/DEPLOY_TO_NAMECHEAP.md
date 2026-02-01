@@ -184,7 +184,8 @@ api.guardr.app (DigitalOcean)  → Rust backend API
 ### Step 1: Build the Static Export
 
 ```bash
-cd /home/runner/work/guardrV6/guardrV6/website
+# Navigate to the website directory from repository root
+cd website
 
 # Install dependencies
 npm install
@@ -286,9 +287,9 @@ jobs:
 ```
 
 **Required Secrets:**
-- `FTP_SERVER`: Your Namecheap FTP hostname (e.g., `ftp.guardr.app`)
-- `FTP_USERNAME`: cPanel/FTP username
-- `FTP_PASSWORD`: cPanel/FTP password
+- `NAMECHEAP_FTP_SERVER`: Your Namecheap FTP hostname (e.g., `ftp.guardr.app`)
+- `NAMECHEAP_FTP_USERNAME`: cPanel/FTP username
+- `NAMECHEAP_FTP_PASSWORD`: cPanel/FTP password
 
 ---
 

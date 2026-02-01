@@ -3,9 +3,9 @@
 # This workflow builds the static Next.js site and deploys via FTP
 # 
 # Required Secrets:
-#   FTP_SERVER   - Namecheap FTP hostname (e.g., ftp.guardr.app)
-#   FTP_USERNAME - cPanel/FTP username
-#   FTP_PASSWORD - cPanel/FTP password
+#   NAMECHEAP_FTP_SERVER   - Namecheap FTP hostname (e.g., ftp.guardr.app)
+#   NAMECHEAP_FTP_USERNAME - cPanel/FTP username
+#   NAMECHEAP_FTP_PASSWORD - cPanel/FTP password
 
 name: Deploy Website to Namecheap
 
@@ -23,6 +23,10 @@ on:
   #   branches: [main]
   #   paths:
   #     - 'website/**'
+
+# Minimal permissions needed for checkout
+permissions:
+  contents: read
 
 jobs:
   deploy:

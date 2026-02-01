@@ -279,9 +279,9 @@ jobs:
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.NAMECHEAP_FTP_SERVER }}
+          username: ${{ secrets.NAMECHEAP_FTP_USERNAME }}
+          password: ${{ secrets.NAMECHEAP_FTP_PASSWORD }}
           local-dir: ./website/out/
           server-dir: /public_html/
 ```

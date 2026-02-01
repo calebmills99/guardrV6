@@ -175,7 +175,7 @@ pub async fn create_api_key(
     if existing_keys.len() >= max_keys {
         return Err(AppError::BadRequest(format!(
             "API key limit reached. Your {} subscription allows {} keys.",
-            user.subscription_tier.to_string(),
+            user.subscription_tier,
             max_keys
         )));
     }

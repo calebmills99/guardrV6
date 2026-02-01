@@ -51,6 +51,7 @@ jobs:
     name: Build Docker Image
     runs-on: ubuntu-latest
     needs: build
+    environment: v66
     
     steps:
       - name: Checkout code

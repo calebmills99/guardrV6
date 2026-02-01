@@ -155,7 +155,6 @@ pub struct EmergencyResource {
 
 // Helper functions for analysis
 fn analyze_love_bombing_patterns(messages: &[Message]) -> f32 {
-    let mut score = 0.0;
     let total_messages = messages.len() as f32;
     
     if total_messages == 0.0 {

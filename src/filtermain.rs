@@ -5,7 +5,7 @@ pub fn run_advanced_filter(input: &str, output: &str) -> Result<(), Box<dyn std:
     let data = fs::read_to_string(input)?;
     let mut json: Value = serde_json::from_str(&data)?;
 
-    let bad_emails = vec!["dan@hotmail.com", "mcrib96@gmail.com"];
+    let bad_emails = ["dan@hotmail.com", "mcrib96@gmail.com"];
 
     if let Some(entries) = json.as_array_mut() {
         entries.retain(|entry| {

@@ -170,7 +170,7 @@ export default function Home() {
     setDemoLoading(true);
     setDemoResults(null); // Clear previous results
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.guardr.app';
 
       // Step 1: Submit async job to Kallisto-OSINTer
       const submitResponse = await fetch(`${apiUrl}/kallisto-osinter/api/check-async`, {

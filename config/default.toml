@@ -27,7 +27,7 @@ connection_timeout_seconds = 5
 command_timeout_seconds = 3
 
 [security]
-cors_allowed_origins = ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "https://guardr.app", "https://www.guardr.app", "https://guardr-api-4c7ct.ondigitalocean.app"]
+cors_allowed_origins = ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:9999", "http://127.0.0.1:9999", "http://192.168.1.82:9999", "https://guardr.app", "https://www.guardr.app", "https://guardr-api-4c7ct.ondigitalocean.app", "https://guardr-5zdiz.ondigitalocean.app"]
 encryption_key = "guardr-dev-key-32chars-123456789"
 password_min_length = 8
 password_require_uppercase = true

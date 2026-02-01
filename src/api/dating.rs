@@ -189,7 +189,7 @@ fn analyze_love_bombing_patterns(messages: &[Message]) -> f32 {
     let compliment_ratio = (compliment_count as f32) / total_messages;
     let intensity_ratio = (intensity_count as f32) / total_messages;
     
-    score = (compliment_ratio * 50.0) + (intensity_ratio * 40.0);
+    let score = (compliment_ratio * 50.0) + (intensity_ratio * 40.0);
     score.min(100.0)
 }
 

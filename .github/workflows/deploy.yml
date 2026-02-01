@@ -78,7 +78,7 @@ jobs:
     name: Deploy to Droplet
     runs-on: ubuntu-latest
     needs: docker
-    environment: vv6
+    environment: v66
     
     steps:
       - name: Deploy via SSH

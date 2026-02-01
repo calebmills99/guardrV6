@@ -170,10 +170,10 @@ export default function Home() {
     setDemoLoading(true);
     setDemoResults(null); // Clear previous results
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.guardr.app';
+      const apiUrl = 'https://api.guardr.app';
 
-      // Step 1: Submit async job to Kallisto-OSINTer
-      const submitResponse = await fetch(`${apiUrl}/kallisto-osinter/api/check-async`, {
+      // Call Guardr API check endpoint
+      const response = await fetch(`${apiUrl}/check`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -184,41 +184,12 @@ export default function Home() {
         }),
       });
 
-      if (!submitResponse.ok) {
-        throw new Error(`API returned ${submitResponse.status}: ${submitResponse.statusText}`);
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status}: ${response.statusText}`);
       }
 
-      const { job_id } = await submitResponse.json();
-
-      // Step 2: Poll for results every 5 seconds
-      let attempts = 0;
-      const maxAttempts = 60; // 5 minutes max (60 * 5 seconds)
-
-      while (attempts < maxAttempts) {
-        await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
-        attempts++;
-
-        const statusResponse = await fetch(`${apiUrl}/kallisto-osinter/api/job/${job_id}`);
-
-        if (!statusResponse.ok) {
-          throw new Error(`Failed to check job status: ${statusResponse.status}`);
-        }
-
-        const jobData = await statusResponse.json();
-
-        if (jobData.status === 'completed') {
-          // Success! We have real OSINT results
-          setDemoResults(jobData.result);
-          break;
-        } else if (jobData.status === 'failed') {
-          throw new Error(jobData.error || 'OSINT analysis failed');
-        }
-        // Continue polling if status is 'pending' or 'processing'
-      }
-
-      if (attempts >= maxAttempts) {
-        throw new Error('OSINT analysis timed out after 5 minutes');
-      }
+      const data = await response.json();
+      setDemoResults(data);
     } catch (error) {
       console.error('Demo search failed:', error);
       if (error instanceof Error) {

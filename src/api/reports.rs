@@ -195,8 +195,8 @@ pub async fn export_reports(
         filtered_reports.into_iter()
             .filter(|r| {
                 let created_at = r.created_at;
-                let after_from = params.from_date.map_or(true, |from| created_at >= from);
-                let before_to = params.to_date.map_or(true, |to| created_at <= to);
+                let after_from = params.from_date.is_none_or(|from| created_at >= from);
+                let before_to = params.to_date.is_none_or(|to| created_at <= to);
                 after_from && before_to
             })
             .collect()

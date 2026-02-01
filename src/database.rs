@@ -60,12 +60,12 @@ pub enum UserSubscriptionTier {
     Enterprise,
 }
 
-impl ToString for UserSubscriptionTier {
-    fn to_string(&self) -> String {
+impl std::fmt::Display for UserSubscriptionTier {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            UserSubscriptionTier::Free => "free".to_string(),
-            UserSubscriptionTier::Pro => "pro".to_string(),
-            UserSubscriptionTier::Enterprise => "enterprise".to_string(),
+            UserSubscriptionTier::Free => write!(f, "free"),
+            UserSubscriptionTier::Pro => write!(f, "pro"),
+            UserSubscriptionTier::Enterprise => write!(f, "enterprise"),
         }
     }
 }

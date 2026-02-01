@@ -28,6 +28,7 @@ pub struct ServerConfig {
 pub struct DatabaseConfig {
     pub sqlite_url: String,
     pub mongodb_url: Option<String>,
+
     pub max_connections: u32,
     pub min_connections: u32,
     pub acquire_timeout_seconds: u64,
@@ -86,6 +87,17 @@ pub struct OsintConfig {
     pub hibp_api_key: Option<String>,
     pub intelx_api_key: Option<String>,
     pub gemini_api_key: Option<String>,
+    pub dehashed_api_key: Option<String>,
+    pub dehashed_email: Option<String>,
+    pub serper_api_key: Option<String>,
+    pub openai_api_key: Option<String>,
+    pub anthropic_api_key: Option<String>,
+    pub mistral_api_key: Option<String>,
+    pub xai_api_key: Option<String>,
+    pub scrapingbee_api_key: Option<String>,
+    pub firecrawl_api_key: Option<String>,
+    pub exa_api_key: Option<String>,
+    pub tavily_api_key: Option<String>,
 }
 
 impl Default for Settings {
@@ -147,6 +159,17 @@ impl Default for Settings {
                 hibp_api_key: None,
                 intelx_api_key: None,
                 gemini_api_key: None,
+                dehashed_api_key: None,
+                dehashed_email: None,
+                serper_api_key: None,
+                openai_api_key: None,
+                anthropic_api_key: None,
+                mistral_api_key: None,
+                xai_api_key: None,
+                scrapingbee_api_key: None,
+                firecrawl_api_key: None,
+                exa_api_key: None,
+                tavily_api_key: None,
             },
         }
     }
@@ -213,6 +236,50 @@ impl Settings {
 
         if let Ok(gemini_key) = env::var("GEMINI_API_KEY") {
             settings.osint.gemini_api_key = Some(gemini_key);
+        }
+
+        if let Ok(dehashed_key) = env::var("DEHASHED_API_KEY") {
+            settings.osint.dehashed_api_key = Some(dehashed_key);
+        }
+
+        if let Ok(dehashed_email) = env::var("DEHASHED_EMAIL") {
+            settings.osint.dehashed_email = Some(dehashed_email);
+        }
+
+        if let Ok(serper_key) = env::var("SERPER_API_KEY") {
+            settings.osint.serper_api_key = Some(serper_key);
+        }
+
+        if let Ok(openai_key) = env::var("OPENAI_API_KEY") {
+            settings.osint.openai_api_key = Some(openai_key);
+        }
+
+        if let Ok(anthropic_key) = env::var("ANTHROPIC_API_KEY") {
+            settings.osint.anthropic_api_key = Some(anthropic_key);
+        }
+
+        if let Ok(mistral_key) = env::var("MISTRAL_API_KEY") {
+            settings.osint.mistral_api_key = Some(mistral_key);
+        }
+
+        if let Ok(xai_key) = env::var("XAI_API_KEY") {
+            settings.osint.xai_api_key = Some(xai_key);
+        }
+
+        if let Ok(scrapingbee_key) = env::var("SCRAPINGBEE_API_KEY") {
+            settings.osint.scrapingbee_api_key = Some(scrapingbee_key);
+        }
+
+        if let Ok(firecrawl_key) = env::var("FIRECRAWL_API_KEY") {
+            settings.osint.firecrawl_api_key = Some(firecrawl_key);
+        }
+
+        if let Ok(exa_key) = env::var("EXA_API_KEY") {
+            settings.osint.exa_api_key = Some(exa_key);
+        }
+
+        if let Ok(tavily_key) = env::var("TAVILY_API_KEY") {
+            settings.osint.tavily_api_key = Some(tavily_key);
         }
 
         Ok(settings)

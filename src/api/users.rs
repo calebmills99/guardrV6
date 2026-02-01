@@ -100,7 +100,7 @@ pub async fn get_profile(
         .and_then(|d| d.with_minute(0))
         .and_then(|d| d.with_second(0))
         .and_then(|d| d.with_nanosecond(0))
-        .unwrap_or_else(|| Utc::now());
+        .unwrap_or_else(Utc::now);
 
     let usage_stats = UsageStatsResponse {
         current_month,

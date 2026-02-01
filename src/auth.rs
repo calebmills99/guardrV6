@@ -155,7 +155,7 @@ impl AuthService {
     }
 
     pub async fn is_token_blacklisted(&self, redis: &mut redis::aio::Connection, jti: &str) -> Result<bool> {
-        let exists: bool = redis.exists(&format!("blacklist:{}", jti))
+        let exists: bool = redis.exists(format!("blacklist:{}", jti))
             .await
             .map_err(|e| anyhow!("Failed to check token blacklist: {}", e))?;
         Ok(exists)

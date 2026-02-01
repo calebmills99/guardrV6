@@ -236,7 +236,7 @@ fn analyze_consistency(claims: &ParticipantClaims, messages: &[Message]) -> Iden
     }
 
     if let Some(age) = claims.age {
-        if age < 18 || age > 80 {
+        if !(18..=80).contains(&age) {
             suspicious_patterns.push("Unusual age range".to_string());
         }
     }
@@ -489,7 +489,7 @@ pub async fn verify_identity_claims(
     }
 
     if let Some(age) = payload.participant_claims.age {
-        if age < 18 || age > 80 {
+        if !(18..=80).contains(&age) {
             suspicious_indicators.push("Age outside typical range".to_string());
         }
         verified_claims.push(VerifiedClaim {

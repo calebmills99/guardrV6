@@ -1,0 +1,64 @@
+# Deploy Next.js website to Namecheap via FTP
+# 
+# This workflow builds the static Next.js site and deploys via FTP
+# 
+# Required Secrets:
+#   FTP_SERVER   - Namecheap FTP hostname (e.g., ftp.guardr.app)
+#   FTP_USERNAME - cPanel/FTP username
+#   FTP_PASSWORD - cPanel/FTP password
+
+name: Deploy Website to Namecheap
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      api_url:
+        description: 'Backend API URL'
+        required: false
+        default: 'https://api.guardr.app'
+  
+  # Auto-deploy on website changes (uncomment to enable)
+  # push:
+  #   branches: [main]
+  #   paths:
+  #     - 'website/**'
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: website/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: website
+        run: npm ci
+      
+      - name: Build static export
+        working-directory: website
+        env:
+          NEXT_PUBLIC_API_URL: ${{ github.event.inputs.api_url || 'https://api.guardr.app' }}
+        run: npm run build
+      
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.NAMECHEAP_FTP_SERVER }}
+          username: ${{ secrets.NAMECHEAP_FTP_USERNAME }}
+          password: ${{ secrets.NAMECHEAP_FTP_PASSWORD }}
+          local-dir: ./website/out/
+          server-dir: /public_html/
+          dangerous-clean-slate: false  # Set to true to delete existing files first
+      
+      - name: Deployment complete
+        run: echo "✨ Website deployed to guardr.app! ✨"

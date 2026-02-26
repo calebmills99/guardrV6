@@ -119,11 +119,15 @@ async fn root_info() -> Json<ApiResponse<serde_json::Value>> {
     })
 }
 
-// Public demo check endpoint
+// Public check endpoint — real OSINT investigation via PERA cycle
 #[derive(Debug, Deserialize)]
 struct DemoCheckRequest {
     name: String,
     location: Option<String>,
+    email: Option<String>,
+    username: Option<String>,
+    image_url: Option<String>,
+    messages: Option<Vec<String>>,
 }
 
 #[derive(Debug, Serialize)]
@@ -138,6 +142,8 @@ struct DemoCheckResponse {
     risk_level: String,
     risk_score: u32,
     person_verification: String,
+    username_verification: Option<Vec<crate::osint::UsernameResult>>,
+    investigation: Option<crate::ai::InvestigationReport>,
     recommendations: Vec<String>,
     safety_tips: Vec<SafetyTip>,
 }
@@ -146,64 +152,105 @@ async fn demo_check(
     State(state): State<AppState>,
     Json(payload): Json<DemoCheckRequest>,
 ) -> Json<DemoCheckResponse> {
-    // Public demo endpoint - performs real OSINT analysis for demonstration
-
     let name = payload.name.clone();
     let location = payload.location.clone().unwrap_or_else(|| "Unknown".to_string());
+    let osint_config = &state.settings.osint;
 
-    // TODO: Implement real OSINT calls here:
-    // 1. Call HIBP API for breach checking
-    // 2. Call Intelligence X for dark web monitoring
-    // 3. Call Gemini AI for risk analysis
-    // 4. Aggregate results
+    // Run PERA investigation cycle with all available OSINT sources
+    let report = crate::ai::investigation::investigate(
+        payload.email.as_deref(),
+        payload.username.as_deref(),
+        Some(&name),
+        Some(&location),
+        payload.image_url.as_deref(),
+        payload.messages.as_deref(),
+        osint_config,
+    )
+    .await;
 
-    // For now, return enhanced demo response with realistic data
-    let risk_score = ((name.len() * 7 + location.len() * 3) % 100) as u32;
-    let risk_level = if risk_score >= 70 {
-        "LOW"
-    } else if risk_score >= 40 {
-        "MEDIUM"
-    } else {
-        "HIGH"
-    }.to_string();
+    match report {
+        Ok(investigation) => {
+            let risk = investigation
+                .risk_assessment
+                .as_ref();
 
-    let person_verification = format!(
-        "OSINT Analysis for {} in {}: Checked 40+ databases, scanned for data breaches, \
-        verified identity claims, and analyzed behavioral patterns. \
-        Analysis completed using HIBP, Intelligence X, and AI risk assessment.",
-        name, location
-    );
+            let risk_score = risk
+                .map(|r| r.overall_risk_score as u32)
+                .unwrap_or(50);
 
-    let recommendations = vec![
-        "Video call before meeting in person to verify identity".to_string(),
-        "Meet in a public place for your first meeting".to_string(),
-        "Tell a trusted friend where you're going".to_string(),
-        "Trust your instincts - if something feels off, it probably is".to_string(),
-    ];
+            let risk_level = risk
+                .map(|r| r.risk_level.clone())
+                .unwrap_or_else(|| "UNKNOWN".to_string());
 
-    let safety_tips = vec![
-        SafetyTip {
-            category: "Smart Habits".to_string(),
-            message: "Always meet in public places for first dates".to_string(),
-        },
-        SafetyTip {
-            category: "Did You Know?".to_string(),
-            message: "69% of LGBTQ+ individuals experience harassment in online dating".to_string(),
-        },
-        SafetyTip {
-            category: "You Decide".to_string(),
-            message: "You are an adult. Use Guardr's insights to make informed decisions about your safety.".to_string(),
-        },
-    ];
+            let recommendations = risk
+                .map(|r| r.recommendations.clone())
+                .unwrap_or_else(|| vec![
+                    "Video call before meeting in person to verify identity".to_string(),
+                    "Trust your instincts - if something feels off, it probably is".to_string(),
+                ]);
 
-    Json(DemoCheckResponse {
-        name,
-        risk_level,
-        risk_score,
-        person_verification,
-        recommendations,
-        safety_tips,
-    })
+            let person_verification = risk
+                .map(|r| r.summary.clone())
+                .unwrap_or_else(|| format!(
+                    "OSINT analysis for {} in {}: {} sources checked, {} findings.",
+                    name, location, investigation.total_findings, investigation.successful_findings
+                ));
+
+            let username_results = investigation
+                .findings
+                .iter()
+                .find(|f| f.tool == "UsernameSearch" && f.success)
+                .and_then(|f| {
+                    f.data.get("results").and_then(|r| {
+                        serde_json::from_value::<Vec<crate::osint::UsernameResult>>(r.clone()).ok()
+                    })
+                });
+
+            Json(DemoCheckResponse {
+                name,
+                risk_level,
+                risk_score,
+                person_verification,
+                username_verification: username_results,
+                investigation: Some(investigation),
+                recommendations,
+                safety_tips: vec![
+                    SafetyTip {
+                        category: "Smart Habits".to_string(),
+                        message: "Always meet in public places for first dates".to_string(),
+                    },
+                    SafetyTip {
+                        category: "Did You Know?".to_string(),
+                        message: "69% of LGBTQ+ individuals experience harassment in online dating".to_string(),
+                    },
+                    SafetyTip {
+                        category: "You Decide".to_string(),
+                        message: "You are an adult. Use Guardr's insights to make informed decisions about your safety.".to_string(),
+                    },
+                ],
+            })
+        }
+        Err(e) => {
+            tracing::error!("Investigation failed: {}", e);
+            Json(DemoCheckResponse {
+                name,
+                risk_level: "UNKNOWN".to_string(),
+                risk_score: 50,
+                person_verification: format!("Investigation encountered an error: {}", e),
+                username_verification: None,
+                investigation: None,
+                recommendations: vec![
+                    "Unable to complete full analysis. Exercise caution.".to_string(),
+                ],
+                safety_tips: vec![
+                    SafetyTip {
+                        category: "Safety First".to_string(),
+                        message: "When in doubt, prioritize your safety.".to_string(),
+                    },
+                ],
+            })
+        }
+    }
 }
 
 // Request/Response models for each endpoint category

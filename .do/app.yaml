@@ -60,8 +60,10 @@ static_sites:
     output_dir: out
     routes:
       - path: /
-    domains:
-      - domain: guardr.app
-        type: PRIMARY
-      - domain: www.guardr.app
-        type: ALIAS
+
+# Custom domains
+domains:
+  - domain: guardr.app
+    type: PRIMARY
+  - domain: www.guardr.app
+    type: ALIAS

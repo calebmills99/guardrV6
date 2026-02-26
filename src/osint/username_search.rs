@@ -16,68 +16,96 @@ struct PlatformCheck {
     name: &'static str,
     url_template: &'static str,
     not_found_indicators: &'static [&'static str],
+    /// Status codes that mean "anti-bot block" — treat as likely exists
+    auth_wall_codes: &'static [u16],
+    /// If true, a 200 with login/auth page likely means profile exists but is gated
+    auth_gated: bool,
 }
 
 const PLATFORMS: &[PlatformCheck] = &[
     PlatformCheck {
         name: "Instagram",
         url_template: "https://www.instagram.com/{}/",
-        not_found_indicators: &["Sorry, this page isn't available", "Page Not Found"],
+        not_found_indicators: &["Page Not Found"],
+        auth_wall_codes: &[],
+        auth_gated: true, // Instagram redirects to login for valid profiles when not authenticated
     },
     PlatformCheck {
         name: "Twitter/X",
         url_template: "https://x.com/{}",
-        not_found_indicators: &["This account doesn't exist", "doesn't exist"],
+        not_found_indicators: &["This account doesn't exist", "doesn't exist", "account is suspended"],
+        auth_wall_codes: &[],
+        auth_gated: false,
     },
     PlatformCheck {
         name: "GitHub",
         url_template: "https://github.com/{}",
         not_found_indicators: &["Not Found"],
+        auth_wall_codes: &[],
+        auth_gated: false,
     },
     PlatformCheck {
         name: "Reddit",
-        url_template: "https://www.reddit.com/user/{}/",
-        not_found_indicators: &["nobody on Reddit goes by that name", "Sorry, nobody"],
+        url_template: "https://www.reddit.com/user/{}/about.json",
+        not_found_indicators: &["\"error\": 404"],
+        auth_wall_codes: &[403], // Reddit 403 = auth wall, profile likely exists
+        auth_gated: false,
     },
     PlatformCheck {
         name: "TikTok",
         url_template: "https://www.tiktok.com/@{}",
-        not_found_indicators: &["Couldn't find this account"],
+        not_found_indicators: &["couldn't find this account", "this account can't be found"],
+        auth_wall_codes: &[],
+        auth_gated: true, // TikTok heavily gates content for non-logged-in users
     },
     PlatformCheck {
         name: "Pinterest",
         url_template: "https://www.pinterest.com/{}/",
         not_found_indicators: &["Sorry! We couldn't find that page"],
+        auth_wall_codes: &[],
+        auth_gated: false,
     },
     PlatformCheck {
         name: "LinkedIn",
         url_template: "https://www.linkedin.com/in/{}/",
-        not_found_indicators: &["Page not found", "this page doesn't exist"],
+        not_found_indicators: &["Page not found", "this page doesn't exist", "profile is not available"],
+        auth_wall_codes: &[999, 403], // 999 = LinkedIn's anti-bot code, profile likely exists
+        auth_gated: true,
     },
     PlatformCheck {
         name: "Facebook",
         url_template: "https://www.facebook.com/{}",
-        not_found_indicators: &["Page Not Found", "content isn't available"],
+        not_found_indicators: &["Page Not Found", "content isn't available", "This content isn't available"],
+        auth_wall_codes: &[400], // Facebook returns 400 for non-logged-in, profile likely exists
+        auth_gated: true,
     },
     PlatformCheck {
         name: "YouTube",
         url_template: "https://www.youtube.com/@{}",
         not_found_indicators: &["404 Not Found", "This page isn't available"],
+        auth_wall_codes: &[],
+        auth_gated: false,
     },
     PlatformCheck {
         name: "Twitch",
         url_template: "https://www.twitch.tv/{}",
         not_found_indicators: &["Sorry. Unless you've got a time machine"],
+        auth_wall_codes: &[],
+        auth_gated: false,
     },
     PlatformCheck {
         name: "Medium",
         url_template: "https://medium.com/@{}",
         not_found_indicators: &["404", "Page not found"],
+        auth_wall_codes: &[],
+        auth_gated: false,
     },
     PlatformCheck {
         name: "Spotify",
         url_template: "https://open.spotify.com/user/{}",
         not_found_indicators: &["Page not found"],
+        auth_wall_codes: &[],
+        auth_gated: false,
     },
 ];
 
@@ -101,9 +129,11 @@ pub async fn search_username(username: &str) -> Vec<UsernameResult> {
             .iter()
             .map(|s| s.to_lowercase())
             .collect();
+        let auth_wall_codes: Vec<u16> = platform.auth_wall_codes.to_vec();
+        let auth_gated = platform.auth_gated;
 
         let handle = tokio::spawn(async move {
-            check_platform(&client, name, &url, &indicators).await
+            check_platform(&client, name, &url, &indicators, &auth_wall_codes, auth_gated).await
         });
         handles.push(handle);
     }
@@ -131,6 +161,8 @@ async fn check_platform(
     platform: &str,
     url: &str,
     not_found_indicators: &[String],
+    auth_wall_codes: &[u16],
+    auth_gated: bool,
 ) -> UsernameResult {
     let ua_idx = url.len() % USER_AGENTS.len();
     let user_agent = USER_AGENTS[ua_idx];
@@ -138,26 +170,56 @@ async fn check_platform(
     match client
         .get(url)
         .header("User-Agent", user_agent)
-        .header("Accept", "text/html,application/xhtml+xml")
+        .header("Accept", "text/html,application/xhtml+xml,application/json")
         .header("Accept-Language", "en-US,en;q=0.9")
         .send()
         .await
     {
         Ok(response) => {
             let status = response.status().as_u16();
+
+            // Auth wall codes = platform is blocking unauthenticated access
+            // This typically means the profile EXISTS but requires login to view
+            if auth_wall_codes.contains(&status) {
+                debug!("{}: FOUND (auth wall, status {})", platform, status);
+                return UsernameResult {
+                    platform: platform.to_string(),
+                    url: url.to_string(),
+                    found: true,
+                    status_code: Some(status),
+                };
+            }
+
             let found = if status == 404 {
                 false
             } else if status == 200 {
                 match response.text().await {
                     Ok(body) => {
                         let body_lower = body.to_lowercase();
-                        !not_found_indicators
+                        let has_not_found = not_found_indicators
                             .iter()
-                            .any(|indicator| body_lower.contains(indicator))
+                            .any(|indicator| body_lower.contains(indicator));
+
+                        if has_not_found {
+                            false
+                        } else if auth_gated {
+                            // Auth-gated platforms (Instagram, TikTok, Facebook, LinkedIn):
+                            // a 200 with a login page usually means the profile exists
+                            // but the platform is forcing login to view it
+                            let login_indicators = ["log in", "sign in", "login", "signin", "create an account"];
+                            let has_login = login_indicators
+                                .iter()
+                                .any(|ind| body_lower.contains(ind));
+                            // If we see login prompts without not-found text, profile likely exists
+                            has_login || !has_not_found
+                        } else {
+                            true
+                        }
                     }
                     Err(_) => false,
                 }
             } else {
+                // 3xx redirects likely mean profile exists
                 status >= 200 && status < 400
             };
 

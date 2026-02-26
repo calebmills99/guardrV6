@@ -23,17 +23,26 @@ pub fn calculate_comprehensive_risk(
     let mut factor_count: f32 = 0.0;
 
     // Breach data factor (0-100)
+    // In dating safety context: breaches = proof of real, long-lived digital identity
+    // Zero breaches is MORE suspicious (potentially fake/new identity)
     let breach_score = match breach_count {
-        0 => 10.0,
-        1..=2 => 30.0,
-        3..=5 => 55.0,
-        6..=10 => 75.0,
-        _ => 90.0,
+        0 => 65.0,   // No breaches = suspicious, could be a fabricated identity
+        1..=2 => 35.0,  // Minimal presence
+        3..=5 => 15.0,  // Normal person, been online a while
+        6..=10 => 10.0, // Very established digital history
+        _ => 8.0,       // Extremely long online presence — definitely a real person
     };
     factors.push(RiskFactor {
-        category: "breach_exposure".to_string(),
+        category: "digital_history".to_string(),
         score: breach_score,
-        description: format!("Found in {} known data breaches", breach_count),
+        description: if breach_count == 0 {
+            "No breach history found — could indicate a new or fabricated identity".to_string()
+        } else {
+            format!(
+                "Found in {} data breaches — confirms a real, established online presence",
+                breach_count
+            )
+        },
         source: "HIBP + BreachDirectory".to_string(),
     });
     total_score += breach_score;
@@ -185,8 +194,8 @@ fn generate_recommendations(factors: &[RiskFactor], overall: f32) -> Vec<String>
 
     for factor in factors {
         match factor.category.as_str() {
-            "breach_exposure" if factor.score > 50.0 => {
-                recs.push("This person's data has appeared in multiple breaches. Ask them to verify their identity.".to_string());
+            "digital_history" if factor.score > 50.0 => {
+                recs.push("No breach history found — this person may have a very new or fabricated online identity. Ask for additional verification.".to_string());
             }
             "digital_footprint" if factor.score > 60.0 => {
                 recs.push("Very limited online presence detected. This could indicate a fake or newly created profile.".to_string());

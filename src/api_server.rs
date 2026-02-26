@@ -28,6 +28,8 @@ mod filtermain;
 mod fetch_dumps;
 mod weak_pass;
 mod risk_score;
+mod osint;
+mod ai;
 
 use crate::{
     config::Settings,

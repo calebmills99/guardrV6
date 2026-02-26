@@ -84,20 +84,39 @@ pub struct RateLimitConfig {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct OsintConfig {
+    // Breach data APIs
     pub hibp_api_key: Option<String>,
+    pub breach_directory_api_key: Option<String>,
     pub intelx_api_key: Option<String>,
-    pub gemini_api_key: Option<String>,
     pub dehashed_api_key: Option<String>,
     pub dehashed_email: Option<String>,
-    pub serper_api_key: Option<String>,
+
+    // AI / LLM APIs
+    pub gemini_api_key: Option<String>,
     pub openai_api_key: Option<String>,
     pub anthropic_api_key: Option<String>,
     pub mistral_api_key: Option<String>,
     pub xai_api_key: Option<String>,
-    pub scrapingbee_api_key: Option<String>,
-    pub firecrawl_api_key: Option<String>,
+    pub google_api_key: Option<String>,
+
+    // Identity verification & catfish detection
+    pub facecheck_api_key: Option<String>,
+    pub reality_defender_api_key: Option<String>,
+
+    // Network intelligence
+    pub shodan_api_key: Option<String>,
+
+    // Search APIs
+    pub serper_api_key: Option<String>,
     pub exa_api_key: Option<String>,
     pub tavily_api_key: Option<String>,
+
+    // Web scraping APIs
+    pub scrapingbee_api_key: Option<String>,
+    pub firecrawl_api_key: Option<String>,
+
+    // RapidAPI gateway
+    pub rapidapi_key: Option<String>,
 }
 
 impl Default for Settings {
@@ -157,19 +176,25 @@ impl Default for Settings {
             },
             osint: OsintConfig {
                 hibp_api_key: None,
+                breach_directory_api_key: None,
                 intelx_api_key: None,
-                gemini_api_key: None,
                 dehashed_api_key: None,
                 dehashed_email: None,
-                serper_api_key: None,
+                gemini_api_key: None,
                 openai_api_key: None,
                 anthropic_api_key: None,
                 mistral_api_key: None,
                 xai_api_key: None,
-                scrapingbee_api_key: None,
-                firecrawl_api_key: None,
+                google_api_key: None,
+                facecheck_api_key: None,
+                reality_defender_api_key: None,
+                shodan_api_key: None,
+                serper_api_key: None,
                 exa_api_key: None,
                 tavily_api_key: None,
+                scrapingbee_api_key: None,
+                firecrawl_api_key: None,
+                rapidapi_key: None,
             },
         }
     }
@@ -280,6 +305,27 @@ impl Settings {
 
         if let Ok(tavily_key) = env::var("TAVILY_API_KEY") {
             settings.osint.tavily_api_key = Some(tavily_key);
+        }
+
+        if let Ok(facecheck_key) = env::var("FACECHECK_API_KEY") {
+            settings.osint.facecheck_api_key = Some(facecheck_key);
+        }
+
+        if let Ok(reality_key) = env::var("REALITY_DEFENDER_API_KEY") {
+            settings.osint.reality_defender_api_key = Some(reality_key);
+        }
+
+        if let Ok(shodan_key) = env::var("SHODAN_API_KEY") {
+            settings.osint.shodan_api_key = Some(shodan_key);
+        }
+
+        if let Ok(google_key) = env::var("GOOGLE_API_KEY") {
+            settings.osint.google_api_key = Some(google_key);
+        }
+
+        if let Ok(rapidapi_key) = env::var("XRAPID_API_KEY") {
+            settings.osint.rapidapi_key = Some(rapidapi_key.clone());
+            settings.osint.breach_directory_api_key = Some(rapidapi_key);
         }
 
         Ok(settings)

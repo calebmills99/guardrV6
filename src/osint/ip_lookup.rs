@@ -1,5 +1,4 @@
 use anyhow::Result;
-use reqwest::Client;
 use tracing::info;
 
 use super::IpIntelligence;
@@ -9,7 +8,7 @@ const IP_API_URL: &str = "https://ipapi.co";
 
 /// IP geolocation and org lookup via ipapi.co (free, no key needed, 1000/day)
 pub async fn lookup_ip(ip: &str) -> Result<IpIntelligence> {
-    let client = Client::new();
+    let client = super::build_http_client();
     let url = format!("{}/{}/json/", IP_API_URL, ip);
 
     let response = client
@@ -47,7 +46,7 @@ pub async fn lookup_ip(ip: &str) -> Result<IpIntelligence> {
 
 /// RDAP lookup for IP registration data (from Kallisto-OSINTer)
 pub async fn lookup_rdap(ip: &str) -> Result<serde_json::Value> {
-    let client = Client::new();
+    let client = super::build_http_client();
     let url = format!("{}/{}", RDAP_URL, ip);
 
     let response = client

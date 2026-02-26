@@ -1,5 +1,4 @@
 use anyhow::Result;
-use reqwest::Client;
 use tracing::{info, warn};
 
 use super::{ModerationCategory, ModerationResult};
@@ -9,7 +8,7 @@ const OPENAI_MODERATION_URL: &str = "https://api.openai.com/v1/moderations";
 /// Run text through OpenAI's free Moderation API
 /// Detects: harassment, hate, self-harm, sexual, violence, and their subcategories
 pub async fn moderate_text(text: &str, api_key: &str) -> Result<ModerationResult> {
-    let client = Client::new();
+    let client = crate::osint::build_http_client();
 
     let response = client
         .post(OPENAI_MODERATION_URL)

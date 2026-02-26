@@ -231,12 +231,12 @@ async fn demo_check(
             })
         }
         Err(e) => {
-            tracing::error!("Investigation failed: {}", e);
+            tracing::error!("Investigation failed for {}: {}", name, e);
             Json(DemoCheckResponse {
                 name,
                 risk_level: "UNKNOWN".to_string(),
                 risk_score: 50,
-                person_verification: format!("Investigation encountered an error: {}", e),
+                person_verification: "Analysis could not be completed. Please try again later.".to_string(),
                 username_verification: None,
                 investigation: None,
                 recommendations: vec![

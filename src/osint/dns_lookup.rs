@@ -9,7 +9,7 @@ const DNS_API_URL: &str = "https://dns.google/resolve";
 /// DNS record lookup using Google's public DNS-over-HTTPS API
 /// Ported from Kallisto-OSINTer's dns_lookup module
 pub async fn lookup_dns(domain: &str) -> Result<DnsRecords> {
-    let client = Client::new();
+    let client = super::build_http_client();
     let mut records = DnsRecords {
         domain: domain.to_string(),
         a_records: vec![],

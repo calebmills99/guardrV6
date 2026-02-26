@@ -1,5 +1,4 @@
 use anyhow::Result;
-use reqwest::Client;
 use tracing::{info, warn};
 
 use super::DeepfakeResult;
@@ -8,7 +7,7 @@ const REALITY_DEFENDER_URL: &str = "https://api.realitydefender.com/v2";
 
 /// Analyze an image for deepfake / AI-generated content
 pub async fn analyze_image(image_url: &str, api_key: &str) -> Result<DeepfakeResult> {
-    let client = Client::new();
+    let client = super::build_http_client();
 
     let response = client
         .post(&format!("{}/detect/image", REALITY_DEFENDER_URL))
@@ -67,7 +66,7 @@ pub async fn analyze_image(image_url: &str, api_key: &str) -> Result<DeepfakeRes
 
 /// Analyze a video for deepfake content
 pub async fn analyze_video(video_url: &str, api_key: &str) -> Result<DeepfakeResult> {
-    let client = Client::new();
+    let client = super::build_http_client();
 
     let response = client
         .post(&format!("{}/detect/video", REALITY_DEFENDER_URL))

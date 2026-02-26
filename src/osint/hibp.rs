@@ -1,13 +1,13 @@
 use anyhow::Result;
-use reqwest::Client;
-use serde::Deserialize;
 use tracing::{info, warn};
 
 use super::BreachRecord;
 
 const HIBP_BASE_URL: &str = "https://haveibeenpwned.com/api/v3";
+/// Pwned Passwords uses a separate host and does not require an API key.
+const PWNED_PASSWORDS_URL: &str = "https://api.pwnedpasswords.com/range";
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, serde::Deserialize)]
 struct HibpBreach {
     #[serde(rename = "Name")]
     name: String,
@@ -22,7 +22,7 @@ struct HibpBreach {
 }
 
 pub async fn check_breaches(email: &str, api_key: &str) -> Result<Vec<BreachRecord>> {
-    let client = Client::new();
+    let client = super::build_http_client();
     let url = format!("{}/breachedaccount/{}", HIBP_BASE_URL, email);
 
     let response = client
@@ -63,13 +63,15 @@ pub async fn check_breaches(email: &str, api_key: &str) -> Result<Vec<BreachReco
     }
 }
 
-pub async fn check_password(password_sha1_prefix: &str, api_key: &str) -> Result<Vec<(String, u64)>> {
-    let client = Client::new();
-    let url = format!("{}/range/{}", HIBP_BASE_URL, password_sha1_prefix);
+/// Check whether a password SHA-1 prefix appears in the Pwned Passwords k-anonymity API.
+/// The caller must supply the first 5 hex characters of the SHA-1 hash (uppercase).
+/// No API key is required — the Pwned Passwords endpoint is public.
+pub async fn check_password(sha1_prefix: &str) -> Result<Vec<(String, u64)>> {
+    let client = super::build_http_client();
+    let url = format!("{}/{}", PWNED_PASSWORDS_URL, sha1_prefix);
 
     let response = client
         .get(&url)
-        .header("hibp-api-key", api_key)
         .header("User-Agent", "Guardr-Safety-Platform")
         .send()
         .await?;

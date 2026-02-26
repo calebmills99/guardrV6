@@ -7,7 +7,17 @@ pub mod username_search;
 pub mod dns_lookup;
 pub mod ip_lookup;
 
+use std::time::Duration;
 use serde::{Deserialize, Serialize};
+
+/// Build a shared HTTP client with a sensible default timeout (30 seconds).
+/// All OSINT and AI HTTP integrations should use this instead of `Client::new()`.
+pub(crate) fn build_http_client() -> reqwest::Client {
+    reqwest::Client::builder()
+        .timeout(Duration::from_secs(30))
+        .build()
+        .expect("Failed to build HTTP client: TLS backend could not be initialized")
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OsintResult {

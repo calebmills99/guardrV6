@@ -12,12 +12,12 @@ import {
   Scale,
   Sparkles,
   Globe,
-  Dog,
   Search,
   Zap,
   Target,
   Star
 } from 'lucide-react';
+import Image from 'next/image';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
@@ -140,12 +140,56 @@ export default function About() {
         </div>
       </section>
 
-      {/* Meet Midnight */}
+      {/* Founder */}
       <section className="py-20 lg:py-28 bg-surface-200/50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center gap-10">
+              <div className="w-48 h-48 lg:w-56 lg:h-56 rounded-2xl overflow-hidden flex-shrink-0 shadow-glow-primary">
+                <Image
+                  src="/images/founder.png"
+                  alt="Caleb Mills - Founder of Guardr"
+                  width={224}
+                  height={224}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <Badge variant="primary" pill className="mb-3">
+                  <Users className="w-4 h-4 mr-1 inline" />
+                  Founder
+                </Badge>
+                <h2 className="text-3xl lg:text-4xl font-bold mb-4">Caleb Mills</h2>
+                <p className="text-lg text-white/80 leading-relaxed mb-4">
+                  After years of navigating online dating as a member of the LGBTQ+ community,
+                  Caleb experienced firsthand the gaps in safety that existing platforms leave wide
+                  open. Catfish profiles, bad actors, and a lack of accountability drove him to
+                  build something better.
+                </p>
+                <p className="text-white/60 leading-relaxed">
+                  Combining a background in technology with a passion for community safety,
+                  Caleb created Guardr to be the tool he wished existed—AI-powered protection
+                  that puts the LGBTQ+ community first.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Meet Midnight */}
+      <section className="py-20 lg:py-28">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="w-24 h-24 rounded-2xl bg-primary-500/20 flex items-center justify-center mx-auto mb-8">
-              <Dog className="w-12 h-12 text-primary-400" />
+            <div className="w-48 h-48 lg:w-64 lg:h-64 rounded-3xl overflow-hidden mx-auto mb-8 shadow-glow-primary-lg">
+              <Image
+                src="/images/midnight.png"
+                alt="Midnight - Guardr's protective mascot dog wearing a rainbow pride collar with a G tag"
+                width={256}
+                height={256}
+                className="w-full h-full object-cover"
+                priority
+              />
             </div>
 
             <Badge variant="secondary" pill className="mb-4">

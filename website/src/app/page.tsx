@@ -29,11 +29,51 @@ type SafetyTip = {
   message: string;
 };
 
+type UsernameResult = {
+  platform: string;
+  url: string;
+  found: boolean;
+  status_code?: number;
+};
+
+type RiskFactor = {
+  category: string;
+  score: number;
+  description: string;
+  source: string;
+};
+
+type InvestigationFinding = {
+  tool: string;
+  query: string;
+  success: boolean;
+  confidence: number;
+  data: Record<string, unknown>;
+};
+
+type Investigation = {
+  total_cycles: number;
+  total_findings: number;
+  successful_findings: number;
+  final_confidence: number;
+  findings: InvestigationFinding[];
+  risk_assessment?: {
+    overall_risk_score: number;
+    risk_level: string;
+    confidence: number;
+    factors: RiskFactor[];
+    summary: string;
+    recommendations: string[];
+  };
+};
+
 type DemoResult = {
   name?: string;
   risk_level?: RiskLevel;
   risk_score?: number;
   person_verification?: string;
+  username_verification?: UsernameResult[];
+  investigation?: Investigation;
   recommendations?: string[];
   safety_tips?: SafetyTip[];
   error?: string;
@@ -44,6 +84,8 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [demoName, setDemoName] = useState('');
   const [demoLocation, setDemoLocation] = useState('');
+  const [demoEmail, setDemoEmail] = useState('');
+  const [demoUsername, setDemoUsername] = useState('');
   const [demoResults, setDemoResults] = useState<DemoResult | null>(null);
   const [demoLoading, setDemoLoading] = useState(false);
 
@@ -179,7 +221,9 @@ export default function Home() {
         },
         body: JSON.stringify({
           name: demoName,
-          location: demoLocation || undefined
+          location: demoLocation || undefined,
+          email: demoEmail || undefined,
+          username: demoUsername || undefined,
         }),
       });
 
@@ -286,31 +330,59 @@ export default function Home() {
               Try Guardr Right Now
             </h2>
             <p className="text-xl text-white/85 max-w-3xl mx-auto">
-              Enter a name to verify. Our AI scans 40+ databases and provides a comprehensive safety assessment.
+              Enter details to verify. More fields = more data sources = better assessment.
             </p>
-            <p className="text-sm text-yellow-300/90 mt-2 max-w-2xl mx-auto">
-              ⏱️ Deep OSINT analysis takes 60-120 seconds. Please be patient while we verify identity, check breaches, and scan the dark web.
+            <p className="text-sm text-white/50 mt-2 max-w-2xl mx-auto">
+              We check HIBP breach databases, scan 11 social platforms, analyze DNS/network data via Shodan, and score risk across all sources.
             </p>
           </div>
 
           <Card variant="glass" className="max-w-2xl mx-auto p-8">
             <form onSubmit={handleDemoSearch} className="mb-6">
               <div className="flex flex-col gap-4">
-                <Input
-                  type="text"
-                  placeholder="Full name (e.g. John Doe)"
-                  value={demoName}
-                  onChange={(e) => setDemoName(e.target.value)}
-                  required
-                  className="w-full"
-                />
-                <Input
-                  type="text"
-                  placeholder="Location (optional, e.g. Austin, TX)"
-                  value={demoLocation}
-                  onChange={(e) => setDemoLocation(e.target.value)}
-                  className="w-full"
-                />
+                <div>
+                  <Input
+                    type="text"
+                    placeholder="Full name (e.g. John Doe)"
+                    value={demoName}
+                    onChange={(e) => setDemoName(e.target.value)}
+                    required
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <Input
+                    type="text"
+                    placeholder="Location (optional, e.g. Austin, TX)"
+                    value={demoLocation}
+                    onChange={(e) => setDemoLocation(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <Input
+                    type="email"
+                    placeholder="Email address (e.g. john@gmail.com)"
+                    value={demoEmail}
+                    onChange={(e) => setDemoEmail(e.target.value)}
+                    className="w-full"
+                  />
+                  <p className="text-xs text-white/50 mt-1 ml-1">
+                    Checks breach databases (HIBP), verifies email domain, scans network infrastructure
+                  </p>
+                </div>
+                <div>
+                  <Input
+                    type="text"
+                    placeholder="Username / handle (e.g. johndoe99)"
+                    value={demoUsername}
+                    onChange={(e) => setDemoUsername(e.target.value)}
+                    className="w-full"
+                  />
+                  <p className="text-xs text-white/50 mt-1 ml-1">
+                    Searches 11 platforms: Instagram, Twitter/X, GitHub, Reddit, LinkedIn, Facebook, YouTube, and more
+                  </p>
+                </div>
                 <Button
                   type="submit"
                   size="lg"
@@ -320,11 +392,11 @@ export default function Home() {
                   disabled={demoLoading}
                   fullWidth
                 >
-                  {demoLoading ? 'Analyzing... (1-2 min)' : 'Run Safety Check'}
+                  {demoLoading ? 'Scanning...' : 'Run Safety Check'}
                 </Button>
                 {demoLoading && (
                   <p className="text-sm text-center text-yellow-300/90 mt-2">
-                    🔍 Deep scanning in progress... This takes 60-120 seconds as we check breach databases, scan the dark web, and verify identity claims.
+                    🔍 Scanning breach databases, checking social platforms, analyzing network data...
                   </p>
                 )}
               </div>
@@ -352,35 +424,141 @@ export default function Home() {
                       </Badge>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    {/* Score + Status */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                       <div className="rounded-lg p-4 bg-white/5 border border-white/10">
                         <div className="text-2xl font-bold text-primary-100">{demoResults.risk_score}/100</div>
-                        <p className="text-white/80">Risk Score</p>
+                        <p className="text-white/60 text-sm">Risk Score</p>
                       </div>
                       <div className="rounded-lg p-4 bg-white/5 border border-white/10">
                         <div className="text-2xl font-bold">
                           {demoResults.risk_level === 'HIGH' ? '🔴' : demoResults.risk_level === 'MEDIUM' ? '🟡' : '🟢'}
                         </div>
-                        <p className="text-white/80">Safety Status</p>
+                        <p className="text-white/60 text-sm">Safety Status</p>
                       </div>
+                      {demoResults.investigation && (
+                        <div className="rounded-lg p-4 bg-white/5 border border-white/10">
+                          <div className="text-2xl font-bold text-primary-100">
+                            {demoResults.investigation.successful_findings}/{demoResults.investigation.total_findings}
+                          </div>
+                          <p className="text-white/60 text-sm">Sources checked</p>
+                        </div>
+                      )}
                     </div>
 
-                    {demoResults.person_verification && (
+                    {/* OSINT Sources Breakdown */}
+                    {demoResults.investigation && demoResults.investigation.findings.length > 0 && (
                       <div className="mb-6">
-                        <h4 className="font-semibold mb-3 text-white">Verification Report:</h4>
-                        <div className="rounded p-4 bg-white/5 border border-white/10">
-                          <p className="text-sm text-white/85 whitespace-pre-wrap">{demoResults.person_verification}</p>
+                        <h4 className="font-semibold mb-3 text-white">🔍 OSINT Sources</h4>
+                        <div className="space-y-2">
+                          {demoResults.investigation.findings.map((finding, index) => {
+                            const toolLabels: Record<string, string> = {
+                              'HIBP': '🛡️ Have I Been Pwned',
+                              'BreachDirectory': '🔓 BreachDirectory',
+                              'DNS': '🌐 DNS Records',
+                              'UsernameSearch': '👤 Username Search',
+                              'Shodan': '📡 Shodan Network Scan',
+                              'OpenAI_Moderation': '🤖 Content Moderation',
+                              'RealityDefender': '🎭 Deepfake Detection',
+                              'FaceCheck': '📸 Reverse Image Search',
+                            };
+                            const label = toolLabels[finding.tool] || finding.tool;
+                            const data = finding.data as Record<string, unknown>;
+
+                            let detail = '';
+                            if (finding.tool === 'HIBP' && finding.success) {
+                              const count = data.breach_count as number;
+                              const breaches = (data.breaches as Array<{title: string; date?: string}>) || [];
+                              detail = count > 0
+                                ? `${count} breaches found — confirms real online presence. ${breaches.slice(0, 3).map(b => b.title).join(', ')}${count > 3 ? ` +${count - 3} more` : ''}`
+                                : 'No breaches — could indicate a new or fabricated identity';
+                            } else if (finding.tool === 'BreachDirectory' && finding.success) {
+                              detail = `${data.breach_count || 0} additional sources found`;
+                            } else if (finding.tool === 'DNS' && finding.success) {
+                              const mx = (data.mx_records as string[]) || [];
+                              detail = mx.length > 0 ? `Valid email domain. Mail handled by ${mx[0]?.split(' ').pop()?.replace(/\.$/, '') || 'verified provider'}` : 'DNS records resolved';
+                            } else if (finding.tool === 'UsernameSearch' && finding.success) {
+                              const found = data.platforms_found as number;
+                              const total = data.platforms_checked as number;
+                              detail = `Found on ${found}/${total} platforms (${Math.round((found / total) * 100)}% digital presence)`;
+                            } else if (finding.tool === 'Shodan' && finding.success) {
+                              const ports = (data.open_ports as number[]) || [];
+                              const vulns = (data.vulns as string[]) || [];
+                              const org = data.org as string;
+                              detail = `${ports.length} open ports, ${vulns.length} vulnerabilities${org ? `. Org: ${org}` : ''}`;
+                            } else if (!finding.success) {
+                              detail = 'Service unavailable';
+                            }
+
+                            return (
+                              <div key={index} className={`rounded p-3 border ${finding.success ? 'bg-white/5 border-white/10' : 'bg-white/[0.02] border-white/5'}`}>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-sm font-medium text-white">{label}</span>
+                                  <span className={`text-xs px-2 py-0.5 rounded-full ${finding.success ? 'bg-green-500/20 text-green-300' : 'bg-white/10 text-white/40'}`}>
+                                    {finding.success ? '✓ checked' : '— skipped'}
+                                  </span>
+                                </div>
+                                {detail && (
+                                  <p className="text-xs text-white/60 mt-1">{detail}</p>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
 
+                    {/* Username Platform Breakdown */}
+                    {demoResults.username_verification && demoResults.username_verification.length > 0 && (
+                      <div className="mb-6">
+                        <h4 className="font-semibold mb-3 text-white">👤 Platform Presence</h4>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {demoResults.username_verification.map((platform, index) => (
+                            <div
+                              key={index}
+                              className={`rounded p-2 text-xs border ${platform.found ? 'bg-green-500/10 border-green-500/30 text-green-300' : 'bg-white/[0.02] border-white/5 text-white/30'}`}
+                            >
+                              <span>{platform.found ? '🟢' : '⚫'} {platform.platform}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Risk Factors */}
+                    {demoResults.investigation?.risk_assessment?.factors && demoResults.investigation.risk_assessment.factors.length > 0 && (
+                      <div className="mb-6">
+                        <h4 className="font-semibold mb-3 text-white">📊 Risk Factors</h4>
+                        <div className="space-y-3">
+                          {demoResults.investigation.risk_assessment.factors.map((factor, index) => {
+                            const pct = Math.round(factor.score);
+                            const barColor = pct > 60 ? 'bg-red-500' : pct > 30 ? 'bg-yellow-500' : 'bg-green-500';
+                            return (
+                              <div key={index} className="rounded p-3 bg-white/5 border border-white/10">
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-sm font-medium text-white capitalize">{factor.category.replace(/_/g, ' ')}</span>
+                                  <span className="text-sm text-white/80">{pct}/100</span>
+                                </div>
+                                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden mb-2">
+                                  <div className={`h-full rounded-full ${barColor}`} style={{ width: `${pct}%` }} />
+                                </div>
+                                <p className="text-xs text-white/60">{factor.description}</p>
+                                <p className="text-xs text-white/40 mt-0.5">Source: {factor.source}</p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Recommendations */}
                     {demoResults.recommendations && demoResults.recommendations.length > 0 && (
                       <div className="mb-6">
-                        <h4 className="font-semibold mb-3 text-white">Safety Recommendations:</h4>
+                        <h4 className="font-semibold mb-3 text-white">Recommendations:</h4>
                         <div className="space-y-2">
                           {demoResults.recommendations.map((rec: string, index: number) => (
                             <div key={index} className="flex items-start gap-2 text-sm text-white/85">
-                              <span className="text-primary-200">•</span>
+                              <span className="text-primary-200 mt-0.5">→</span>
                               <span>{rec}</span>
                             </div>
                           ))}
@@ -388,6 +566,7 @@ export default function Home() {
                       </div>
                     )}
 
+                    {/* Safety Tips */}
                     {demoResults.safety_tips && (
                       <div className="mt-4 p-4 rounded bg-primary-500/10 border border-primary-400/30">
                         <h4 className="font-semibold text-primary-100 mb-2">💡 Safety Tips</h4>

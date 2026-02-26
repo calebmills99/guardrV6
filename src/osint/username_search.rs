@@ -52,13 +52,6 @@ const PLATFORMS: &[PlatformCheck] = &[
         auth_gated: false,
     },
     PlatformCheck {
-        name: "TikTok",
-        url_template: "https://www.tiktok.com/@{}",
-        not_found_indicators: &["couldn't find this account", "this account can't be found"],
-        auth_wall_codes: &[],
-        auth_gated: true, // TikTok heavily gates content for non-logged-in users
-    },
-    PlatformCheck {
         name: "Pinterest",
         url_template: "https://www.pinterest.com/{}/",
         not_found_indicators: &["Sorry! We couldn't find that page"],

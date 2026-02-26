@@ -86,6 +86,7 @@ export default function Home() {
   const [demoLocation, setDemoLocation] = useState('');
   const [demoEmail, setDemoEmail] = useState('');
   const [demoUsername, setDemoUsername] = useState('');
+  const [demoPhone, setDemoPhone] = useState('');
   const [demoResults, setDemoResults] = useState<DemoResult | null>(null);
   const [demoLoading, setDemoLoading] = useState(false);
 
@@ -224,6 +225,7 @@ export default function Home() {
           location: demoLocation || undefined,
           email: demoEmail || undefined,
           username: demoUsername || undefined,
+          phone: demoPhone || undefined,
         }),
       });
 
@@ -383,6 +385,18 @@ export default function Home() {
                     Searches 11 platforms: Instagram, Twitter/X, GitHub, Reddit, LinkedIn, Facebook, YouTube, and more
                   </p>
                 </div>
+                <div>
+                  <Input
+                    type="tel"
+                    placeholder="Phone number (e.g. 2125551234)"
+                    value={demoPhone}
+                    onChange={(e) => setDemoPhone(e.target.value)}
+                    className="w-full"
+                  />
+                  <p className="text-xs text-white/50 mt-1 ml-1">
+                    Reverse phone lookup: carrier, line type (mobile/VoIP/landline), owner info, prepaid detection
+                  </p>
+                </div>
                 <Button
                   type="submit"
                   size="lg"
@@ -461,6 +475,7 @@ export default function Home() {
                               'OpenAI_Moderation': '🤖 Content Moderation',
                               'RealityDefender': '🎭 Deepfake Detection',
                               'FaceCheck': '📸 Reverse Image Search',
+                              'PhoneLookup': '📱 Phone Lookup',
                             };
                             const label = toolLabels[finding.tool] || finding.tool;
                             const data = finding.data as Record<string, unknown>;
@@ -481,6 +496,14 @@ export default function Home() {
                               const found = data.platforms_found as number;
                               const total = data.platforms_checked as number;
                               detail = `Found on ${found}/${total} platforms (${Math.round((found / total) * 100)}% digital presence)`;
+                            } else if (finding.tool === 'PhoneLookup' && finding.success) {
+                              const valid = data.valid as boolean;
+                              const lineType = data.line_type as string || 'unknown';
+                              const carrier = data.carrier as string || '';
+                              const riskDesc = data.risk_description as string || '';
+                              detail = valid
+                                ? `${lineType}${carrier ? ` (${carrier})` : ''}. ${riskDesc}`
+                                : 'Invalid phone number — could be fake or disposable';
                             } else if (finding.tool === 'Shodan' && finding.success) {
                               const ports = (data.open_ports as number[]) || [];
                               const vulns = (data.vulns as string[]) || [];

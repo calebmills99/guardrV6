@@ -6,6 +6,7 @@ pub mod reality_defender;
 pub mod username_search;
 pub mod dns_lookup;
 pub mod ip_lookup;
+pub mod phone_lookup;
 
 use serde::{Deserialize, Serialize};
 

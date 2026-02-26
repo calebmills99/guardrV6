@@ -26,6 +26,7 @@ pub enum RiskCategory {
     PhotoAuthenticity,
     ReverseImage,
     NetworkExposure,
+    PhoneRisk,
 }
 
 impl std::fmt::Display for RiskCategory {
@@ -37,6 +38,7 @@ impl std::fmt::Display for RiskCategory {
             RiskCategory::PhotoAuthenticity => "photo_authenticity",
             RiskCategory::ReverseImage => "reverse_image",
             RiskCategory::NetworkExposure => "network_exposure",
+            RiskCategory::PhoneRisk => "phone_risk",
         };
         write!(f, "{}", s)
     }

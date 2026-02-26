@@ -13,16 +13,18 @@ pub async fn investigate(
     username: Option<&str>,
     name: Option<&str>,
     location: Option<&str>,
+    phone: Option<&str>,
     image_url: Option<&str>,
     messages: Option<&[String]>,
     config: &OsintConfig,
 ) -> Result<InvestigationReport> {
     let objective = format!(
-        "Investigate safety of dating profile: email={}, username={}, name={}, location={}",
+        "Investigate safety of dating profile: email={}, username={}, name={}, location={}, phone={}",
         email.unwrap_or("N/A"),
         username.unwrap_or("N/A"),
         name.unwrap_or("N/A"),
         location.unwrap_or("N/A"),
+        phone.unwrap_or("N/A"),
     );
 
     info!("PERA Investigation started: {}", objective);
@@ -125,6 +127,45 @@ pub async fn investigate(
                 "results": results
             }),
         });
+    }
+
+    // EXECUTE: Phone lookup
+    if let Some(phone_num) = phone {
+        if let Some(ref key) = config.trestle_api_key {
+            match osint::phone_lookup::lookup_phone(phone_num, key).await {
+                Ok(result) => {
+                    let (risk_score, description) = osint::phone_lookup::assess_phone_risk(&result);
+                    findings.push(InvestigationFinding {
+                        tool: "PhoneLookup".to_string(),
+                        query: phone_num.to_string(),
+                        success: true,
+                        confidence: 0.85,
+                        data: serde_json::json!({
+                            "valid": result.valid,
+                            "carrier": result.carrier,
+                            "line_type": result.line_type,
+                            "country": result.country_code,
+                            "owner_name": result.owner_name,
+                            "owner_city": result.owner_city,
+                            "owner_state": result.owner_state,
+                            "is_prepaid": result.is_prepaid,
+                            "risk_score": risk_score,
+                            "risk_description": description,
+                        }),
+                    });
+                }
+                Err(e) => {
+                    warn!("Phone lookup failed: {}", e);
+                    findings.push(InvestigationFinding {
+                        tool: "PhoneLookup".to_string(),
+                        query: phone_num.to_string(),
+                        success: false,
+                        confidence: 0.0,
+                        data: serde_json::json!({"error": e.to_string()}),
+                    });
+                }
+            }
+        }
     }
 
     // EXECUTE: Content moderation on messages
@@ -331,6 +372,15 @@ async fn build_risk_from_findings(
                 .map(|a| a.len() as u32)
         });
 
+    let phone_risk = findings
+        .iter()
+        .find(|f| f.tool == "PhoneLookup" && f.success)
+        .and_then(|f| {
+            let score = f.data.get("risk_score").and_then(|v| v.as_f64()).map(|v| v as f32)?;
+            let desc = f.data.get("risk_description").and_then(|v| v.as_str()).map(String::from)?;
+            Some((score, desc))
+        });
+
     risk_analyzer::calculate_comprehensive_risk(
         breach_count,
         username_found,
@@ -341,5 +391,6 @@ async fn build_risk_from_findings(
         face_matches,
         shodan_vulns,
         shodan_ports,
+        phone_risk,
     )
 }

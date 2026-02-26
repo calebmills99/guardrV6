@@ -132,6 +132,7 @@ pub fn calculate_comprehensive_risk(
     face_matches: Option<u32>,
     shodan_vulns: Option<u32>,
     shodan_open_ports: Option<u32>,
+    phone_risk: Option<(f32, String)>,
 ) -> RiskAssessment {
     let mut factors: Vec<RiskFactor> = Vec::new();
 
@@ -155,6 +156,15 @@ pub fn calculate_comprehensive_risk(
 
     if let Some(f) = network_exposure_factor(shodan_vulns, shodan_open_ports) {
         factors.push(f);
+    }
+
+    if let Some((score, description)) = phone_risk {
+        factors.push(RiskFactor {
+            category: RiskCategory::PhoneRisk,
+            score,
+            description,
+            source: "numverify".to_string(),
+        });
     }
 
     let overall = if factors.is_empty() {
@@ -216,6 +226,9 @@ fn generate_recommendations(factors: &[RiskFactor], overall: f32) -> Vec<String>
             }
             (RiskCategory::NetworkExposure, score) if score > 30.0 => {
                 recs.push("Network infrastructure associated with this profile has known vulnerabilities.".to_string());
+            }
+            (RiskCategory::PhoneRisk, score) if score > 50.0 => {
+                recs.push("Phone number appears to be VoIP or disposable — commonly used by scammers. Ask for a verified mobile number.".to_string());
             }
             _ => {}
         }

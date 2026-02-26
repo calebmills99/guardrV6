@@ -115,6 +115,9 @@ pub struct OsintConfig {
     pub scrapingbee_api_key: Option<String>,
     pub firecrawl_api_key: Option<String>,
 
+    // Phone lookup (Trestle Reverse Phone API)
+    pub trestle_api_key: Option<String>,
+
     // RapidAPI gateway
     pub rapidapi_key: Option<String>,
 }
@@ -194,6 +197,7 @@ impl Default for Settings {
                 tavily_api_key: None,
                 scrapingbee_api_key: None,
                 firecrawl_api_key: None,
+                trestle_api_key: None,
                 rapidapi_key: None,
             },
         }
@@ -321,6 +325,10 @@ impl Settings {
 
         if let Ok(google_key) = env::var("GOOGLE_API_KEY") {
             settings.osint.google_api_key = Some(google_key);
+        }
+
+        if let Ok(trestle_key) = env::var("TRESTLE_API_KEY") {
+            settings.osint.trestle_api_key = Some(trestle_key);
         }
 
         if let Ok(rapidapi_key) = env::var("XRAPID_API_KEY") {

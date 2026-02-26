@@ -126,6 +126,7 @@ struct DemoCheckRequest {
     location: Option<String>,
     email: Option<String>,
     username: Option<String>,
+    phone: Option<String>,
     image_url: Option<String>,
     messages: Option<Vec<String>>,
 }
@@ -162,6 +163,7 @@ async fn demo_check(
         payload.username.as_deref(),
         Some(&name),
         Some(&location),
+        payload.phone.as_deref(),
         payload.image_url.as_deref(),
         payload.messages.as_deref(),
         osint_config,

@@ -9,7 +9,7 @@ const INTERNETDB_URL: &str = "https://internetdb.shodan.io";
 
 /// Free InternetDB lookup (no API key required)
 pub async fn lookup_internetdb(ip: &str) -> Result<IpIntelligence> {
-    let client = Client::new();
+    let client = crate::http_client::build_default_client();
     let url = format!("{}/{}", INTERNETDB_URL, ip);
 
     let response = client.get(&url).send().await?;
@@ -63,7 +63,7 @@ pub async fn lookup_internetdb(ip: &str) -> Result<IpIntelligence> {
 
 /// Full Shodan host lookup (requires API key)
 pub async fn lookup_host(ip: &str, api_key: &str) -> Result<IpIntelligence> {
-    let client = Client::new();
+    let client = crate::http_client::build_default_client();
     let url = format!("{}/shodan/host/{}", SHODAN_API_URL, ip);
 
     let response = client
@@ -111,7 +111,7 @@ pub async fn lookup_host(ip: &str, api_key: &str) -> Result<IpIntelligence> {
 
 /// Search Shodan for a query string
 pub async fn search(query: &str, api_key: &str) -> Result<serde_json::Value> {
-    let client = Client::new();
+    let client = crate::http_client::build_default_client();
     let url = format!("{}/shodan/host/search", SHODAN_API_URL);
 
     let response = client

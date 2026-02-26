@@ -21,7 +21,7 @@ struct BdResult {
 }
 
 pub async fn search_breaches(query: &str, query_type: &str, rapidapi_key: &str) -> Result<Vec<BreachRecord>> {
-    let client = Client::new();
+    let client = crate::http_client::build_default_client();
 
     let response = client
         .get(BREACH_DIR_URL)

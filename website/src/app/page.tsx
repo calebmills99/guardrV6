@@ -536,7 +536,7 @@ export default function Home() {
                             return (
                               <div key={index} className="rounded p-3 bg-white/5 border border-white/10">
                                 <div className="flex items-center justify-between mb-1">
-                                  <span className="text-sm font-medium text-white capitalize">{factor.category.replace(/_/g, ' ')}</span>
+                                  <span className="text-sm font-medium text-white">{factor.category.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ')}</span>
                                   <span className="text-sm text-white/80">{pct}/100</span>
                                 </div>
                                 <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden mb-2">

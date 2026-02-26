@@ -29,7 +29,6 @@ pub async fn investigate(
 
     let mut findings: Vec<InvestigationFinding> = Vec::new();
     let mut cycle = 0;
-    let max_cycles = 2;
 
     // === CYCLE 1: Primary data gathering ===
     cycle += 1;
@@ -268,7 +267,7 @@ pub async fn investigate(
 
 async fn build_risk_from_findings(
     findings: &[InvestigationFinding],
-    config: &OsintConfig,
+    _config: &OsintConfig,
 ) -> super::RiskAssessment {
     // Extract metrics from findings
     let breach_count: u32 = findings

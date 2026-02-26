@@ -6,6 +6,7 @@ use tracing::{info, warn};
 use super::BreachRecord;
 
 const HIBP_BASE_URL: &str = "https://haveibeenpwned.com/api/v3";
+const HIBP_PASSWORDS_URL: &str = "https://api.pwnedpasswords.com";
 
 #[derive(Debug, Deserialize)]
 struct HibpBreach {
@@ -22,7 +23,7 @@ struct HibpBreach {
 }
 
 pub async fn check_breaches(email: &str, api_key: &str) -> Result<Vec<BreachRecord>> {
-    let client = Client::new();
+    let client = crate::http_client::build_default_client();
     let url = format!("{}/breachedaccount/{}", HIBP_BASE_URL, email);
 
     let response = client
@@ -63,13 +64,12 @@ pub async fn check_breaches(email: &str, api_key: &str) -> Result<Vec<BreachReco
     }
 }
 
-pub async fn check_password(password_sha1_prefix: &str, api_key: &str) -> Result<Vec<(String, u64)>> {
-    let client = Client::new();
-    let url = format!("{}/range/{}", HIBP_BASE_URL, password_sha1_prefix);
+pub async fn check_password(password_sha1_prefix: &str) -> Result<Vec<(String, u64)>> {
+    let client = crate::http_client::build_default_client();
+    let url = format!("{}/range/{}", HIBP_PASSWORDS_URL, password_sha1_prefix);
 
     let response = client
         .get(&url)
-        .header("hibp-api-key", api_key)
         .header("User-Agent", "Guardr-Safety-Platform")
         .send()
         .await?;

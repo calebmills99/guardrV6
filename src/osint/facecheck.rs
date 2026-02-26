@@ -9,14 +9,13 @@ const FACECHECK_RESULT_URL: &str = "https://facecheck.id/api/search";
 
 /// Upload an image and initiate a face search
 pub async fn search_face(image_url: &str, api_key: &str) -> Result<FaceSearchResult> {
-    let client = Client::new();
+    let client = crate::http_client::build_default_client();
 
     let response = client
         .post(FACECHECK_API_URL)
         .header("Authorization", format!("Bearer {}", api_key))
         .json(&serde_json::json!({
-            "images": [image_url],
-            "id_search": api_key
+            "images": [image_url]
         }))
         .send()
         .await?;
@@ -49,7 +48,7 @@ pub async fn search_face(image_url: &str, api_key: &str) -> Result<FaceSearchRes
 }
 
 async fn poll_results(id_search: &str, api_key: &str) -> Result<FaceSearchResult> {
-    let client = Client::new();
+    let client = crate::http_client::build_default_client();
 
     for attempt in 0..10 {
         tokio::time::sleep(std::time::Duration::from_secs(3)).await;

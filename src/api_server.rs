@@ -30,6 +30,7 @@ mod weak_pass;
 mod risk_score;
 mod osint;
 mod ai;
+mod http_client;
 
 use crate::{
     config::Settings,

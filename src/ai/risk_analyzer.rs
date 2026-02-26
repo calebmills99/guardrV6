@@ -2,11 +2,126 @@ use anyhow::Result;
 use reqwest::Client;
 use tracing::{info, warn};
 
-use super::{RiskAssessment, RiskFactor};
-use crate::osint;
+use super::{RiskAssessment, RiskCategory, RiskFactor};
 
-/// Multi-source risk analysis aggregator
-/// Combines OSINT data from all available sources into a unified risk score
+fn breach_factor(breach_count: u32) -> RiskFactor {
+    let score = match breach_count {
+        0 => 65.0,
+        1..=2 => 35.0,
+        3..=5 => 15.0,
+        6..=10 => 10.0,
+        _ => 8.0,
+    };
+    let description = if breach_count == 0 {
+        "No breach history found — could indicate a new or fabricated identity".to_string()
+    } else {
+        format!(
+            "Found in {} data breaches — confirms a real, established online presence",
+            breach_count
+        )
+    };
+    RiskFactor {
+        category: RiskCategory::DigitalHistory,
+        score,
+        description,
+        source: "HIBP + BreachDirectory".to_string(),
+    }
+}
+
+fn digital_footprint_factor(found: u32, total: u32) -> Option<RiskFactor> {
+    if total == 0 {
+        return None;
+    }
+    let presence_ratio = found as f32 / total as f32;
+    let score = match found {
+        0 => 85.0,
+        1..=2 => 60.0,
+        3..=5 => 30.0,
+        _ => 15.0,
+    };
+    Some(RiskFactor {
+        category: RiskCategory::DigitalFootprint,
+        score,
+        description: format!(
+            "Found on {}/{} platforms ({:.0}% presence)",
+            found,
+            total,
+            presence_ratio * 100.0
+        ),
+        source: "Username Search".to_string(),
+    })
+}
+
+fn content_moderation_factor(flagged: bool, score: f32) -> Option<RiskFactor> {
+    if !flagged && score <= 0.1 {
+        return None;
+    }
+    let mod_score = (score * 100.0).min(100.0);
+    Some(RiskFactor {
+        category: RiskCategory::ContentSafety,
+        score: mod_score,
+        description: if flagged {
+            "Conversation flagged for harmful content".to_string()
+        } else {
+            format!("Content moderation score: {:.1}%", mod_score)
+        },
+        source: "OpenAI Moderation".to_string(),
+    })
+}
+
+fn deepfake_factor(prob: f32) -> RiskFactor {
+    let score = (prob * 100.0).min(100.0);
+    RiskFactor {
+        category: RiskCategory::PhotoAuthenticity,
+        score,
+        description: format!("AI-generated/manipulated probability: {:.1}%", score),
+        source: "Reality Defender".to_string(),
+    }
+}
+
+fn face_search_factor(matches: u32) -> RiskFactor {
+    let score = if matches == 0 {
+        70.0
+    } else if matches <= 3 {
+        20.0
+    } else {
+        40.0
+    };
+    RiskFactor {
+        category: RiskCategory::ReverseImage,
+        score,
+        description: format!("Face found in {} locations online", matches),
+        source: "FaceCheck.id".to_string(),
+    }
+}
+
+fn network_exposure_factor(vulns: Option<u32>, ports: Option<u32>) -> Option<RiskFactor> {
+    let v = vulns.unwrap_or(0);
+    if v == 0 {
+        return None;
+    }
+    let score = ((v as f32) * 15.0).min(80.0);
+    Some(RiskFactor {
+        category: RiskCategory::NetworkExposure,
+        score,
+        description: format!(
+            "{} known vulnerabilities, {} open ports",
+            v,
+            ports.unwrap_or(0)
+        ),
+        source: "Shodan".to_string(),
+    })
+}
+
+fn risk_level_for_score(overall: f32) -> &'static str {
+    match overall as u32 {
+        0..=25 => "LOW",
+        26..=50 => "MEDIUM",
+        51..=75 => "HIGH",
+        _ => "CRITICAL",
+    }
+}
+
 pub fn calculate_comprehensive_risk(
     breach_count: u32,
     username_platforms_found: u32,
@@ -18,148 +133,38 @@ pub fn calculate_comprehensive_risk(
     shodan_vulns: Option<u32>,
     shodan_open_ports: Option<u32>,
 ) -> RiskAssessment {
-    let mut factors = Vec::new();
-    let mut total_score: f32 = 0.0;
-    let mut factor_count: f32 = 0.0;
+    let mut factors: Vec<RiskFactor> = Vec::new();
 
-    // Breach data factor (0-100)
-    // In dating safety context: breaches = proof of real, long-lived digital identity
-    // Zero breaches is MORE suspicious (potentially fake/new identity)
-    let breach_score = match breach_count {
-        0 => 65.0,   // No breaches = suspicious, could be a fabricated identity
-        1..=2 => 35.0,  // Minimal presence
-        3..=5 => 15.0,  // Normal person, been online a while
-        6..=10 => 10.0, // Very established digital history
-        _ => 8.0,       // Extremely long online presence — definitely a real person
-    };
-    factors.push(RiskFactor {
-        category: "digital_history".to_string(),
-        score: breach_score,
-        description: if breach_count == 0 {
-            "No breach history found — could indicate a new or fabricated identity".to_string()
-        } else {
-            format!(
-                "Found in {} data breaches — confirms a real, established online presence",
-                breach_count
-            )
-        },
-        source: "HIBP + BreachDirectory".to_string(),
-    });
-    total_score += breach_score;
-    factor_count += 1.0;
+    factors.push(breach_factor(breach_count));
 
-    // Digital footprint factor (0-100) — inverted: more platforms = lower risk
-    if username_platforms_total > 0 {
-        let presence_ratio = username_platforms_found as f32 / username_platforms_total as f32;
-        let footprint_score = match username_platforms_found {
-            0 => 85.0, // No presence = very suspicious
-            1..=2 => 60.0,
-            3..=5 => 30.0,
-            _ => 15.0, // Extensive presence = likely real
-        };
-        factors.push(RiskFactor {
-            category: "digital_footprint".to_string(),
-            score: footprint_score,
-            description: format!(
-                "Found on {}/{} platforms ({:.0}% presence)",
-                username_platforms_found,
-                username_platforms_total,
-                presence_ratio * 100.0
-            ),
-            source: "Username Search".to_string(),
-        });
-        total_score += footprint_score;
-        factor_count += 1.0;
+    if let Some(f) = digital_footprint_factor(username_platforms_found, username_platforms_total) {
+        factors.push(f);
     }
 
-    // Content moderation factor
-    if moderation_flagged || moderation_score > 0.1 {
-        let mod_score = (moderation_score * 100.0).min(100.0);
-        factors.push(RiskFactor {
-            category: "content_safety".to_string(),
-            score: mod_score,
-            description: if moderation_flagged {
-                "Conversation flagged for harmful content".to_string()
-            } else {
-                format!("Content moderation score: {:.1}%", mod_score)
-            },
-            source: "OpenAI Moderation".to_string(),
-        });
-        total_score += mod_score;
-        factor_count += 1.0;
+    if let Some(f) = content_moderation_factor(moderation_flagged, moderation_score) {
+        factors.push(f);
     }
 
-    // Deepfake detection factor
     if let Some(prob) = deepfake_probability {
-        let df_score = (prob * 100.0).min(100.0);
-        factors.push(RiskFactor {
-            category: "photo_authenticity".to_string(),
-            score: df_score,
-            description: format!(
-                "AI-generated/manipulated probability: {:.1}%",
-                df_score
-            ),
-            source: "Reality Defender".to_string(),
-        });
-        total_score += df_score;
-        factor_count += 1.0;
+        factors.push(deepfake_factor(prob));
     }
 
-    // Face search factor
     if let Some(matches) = face_matches {
-        let face_score = if matches == 0 {
-            70.0 // No matches could mean stolen/unique photo — moderate risk
-        } else if matches <= 3 {
-            20.0 // Some matches = likely real person
-        } else {
-            40.0 // Many matches could indicate stock photo
-        };
-        factors.push(RiskFactor {
-            category: "reverse_image".to_string(),
-            score: face_score,
-            description: format!("Face found in {} locations online", matches),
-            source: "FaceCheck.id".to_string(),
-        });
-        total_score += face_score;
-        factor_count += 1.0;
+        factors.push(face_search_factor(matches));
     }
 
-    // Network exposure factor
-    if let Some(vulns) = shodan_vulns {
-        if vulns > 0 {
-            let vuln_score = ((vulns as f32) * 15.0).min(80.0);
-            factors.push(RiskFactor {
-                category: "network_exposure".to_string(),
-                score: vuln_score,
-                description: format!(
-                    "{} known vulnerabilities, {} open ports",
-                    vulns,
-                    shodan_open_ports.unwrap_or(0)
-                ),
-                source: "Shodan".to_string(),
-            });
-            total_score += vuln_score;
-            factor_count += 1.0;
-        }
+    if let Some(f) = network_exposure_factor(shodan_vulns, shodan_open_ports) {
+        factors.push(f);
     }
 
-    // Calculate overall
-    let overall = if factor_count > 0.0 {
-        total_score / factor_count
+    let overall = if factors.is_empty() {
+        50.0
     } else {
-        50.0 // Unknown
+        factors.iter().map(|f| f.score).sum::<f32>() / factors.len() as f32
     };
 
-    let risk_level = match overall as u32 {
-        0..=25 => "LOW",
-        26..=50 => "MEDIUM",
-        51..=75 => "HIGH",
-        _ => "CRITICAL",
-    }
-    .to_string();
-
-    let confidence = (factor_count / 6.0).min(1.0); // Max 6 sources
-
+    let risk_level = risk_level_for_score(overall).to_string();
+    let confidence = (factors.len() as f32 / 6.0).min(1.0);
     let recommendations = generate_recommendations(&factors, overall);
 
     let summary = format!(
@@ -193,21 +198,24 @@ fn generate_recommendations(factors: &[RiskFactor], overall: f32) -> Vec<String>
     let mut recs = Vec::new();
 
     for factor in factors {
-        match factor.category.as_str() {
-            "digital_history" if factor.score > 50.0 => {
+        match (factor.category, factor.score) {
+            (RiskCategory::DigitalHistory, score) if score > 50.0 => {
                 recs.push("No breach history found — this person may have a very new or fabricated online identity. Ask for additional verification.".to_string());
             }
-            "digital_footprint" if factor.score > 60.0 => {
+            (RiskCategory::DigitalFootprint, score) if score > 60.0 => {
                 recs.push("Very limited online presence detected. This could indicate a fake or newly created profile.".to_string());
             }
-            "content_safety" if factor.score > 30.0 => {
+            (RiskCategory::ContentSafety, score) if score > 30.0 => {
                 recs.push("Potentially harmful language detected in communications. Proceed with caution.".to_string());
             }
-            "photo_authenticity" if factor.score > 40.0 => {
+            (RiskCategory::PhotoAuthenticity, score) if score > 40.0 => {
                 recs.push("Profile photo may be AI-generated or manipulated. Request a live video call to verify.".to_string());
             }
-            "reverse_image" if factor.score > 50.0 => {
+            (RiskCategory::ReverseImage, score) if score > 50.0 => {
                 recs.push("Profile photo could not be verified across known sources. Consider a reverse image search.".to_string());
+            }
+            (RiskCategory::NetworkExposure, score) if score > 30.0 => {
+                recs.push("Network infrastructure associated with this profile has known vulnerabilities.".to_string());
             }
             _ => {}
         }
@@ -225,13 +233,11 @@ fn generate_recommendations(factors: &[RiskFactor], overall: f32) -> Vec<String>
     recs
 }
 
-/// Call an LLM for narrative risk analysis
 pub async fn llm_risk_analysis(
     prompt: &str,
     openai_key: Option<&str>,
     anthropic_key: Option<&str>,
 ) -> Result<String> {
-    // Try OpenAI first, then Anthropic as fallback (Kallisto pattern)
     if let Some(key) = openai_key {
         match call_openai(prompt, key).await {
             Ok(response) => return Ok(response),
@@ -250,7 +256,7 @@ pub async fn llm_risk_analysis(
 }
 
 async fn call_openai(prompt: &str, api_key: &str) -> Result<String> {
-    let client = Client::new();
+    let client = crate::http_client::build_default_client();
     let response = client
         .post("https://api.openai.com/v1/chat/completions")
         .header("Authorization", format!("Bearer {}", api_key))
@@ -278,7 +284,7 @@ async fn call_openai(prompt: &str, api_key: &str) -> Result<String> {
 }
 
 async fn call_anthropic(prompt: &str, api_key: &str) -> Result<String> {
-    let client = Client::new();
+    let client = crate::http_client::build_default_client();
     let response = client
         .post("https://api.anthropic.com/v1/messages")
         .header("x-api-key", api_key)

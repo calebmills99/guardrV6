@@ -109,7 +109,7 @@ pub async fn search_username(username: &str) -> Vec<UsernameResult> {
         .timeout(Duration::from_secs(10))
         .redirect(reqwest::redirect::Policy::limited(3))
         .build()
-        .unwrap_or_default();
+        .unwrap_or_else(|_| Client::new());
 
     let mut handles = Vec::new();
 

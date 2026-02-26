@@ -170,9 +170,8 @@ export default function Home() {
     setDemoLoading(true);
     setDemoResults(null); // Clear previous results
     try {
-      const apiUrl = 'https://api.guardr.app';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-      // Call Guardr API check endpoint
       const response = await fetch(`${apiUrl}/check`, {
         method: 'POST',
         headers: {

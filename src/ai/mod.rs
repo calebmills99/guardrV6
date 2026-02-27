@@ -36,6 +36,20 @@ pub struct RiskFactor {
     pub source: String,
 }
 
+/// Input data for comprehensive risk calculation
+#[derive(Debug, Clone)]
+pub struct RiskInputData {
+    pub breach_count: u32,
+    pub username_platforms_found: u32,
+    pub username_platforms_total: u32,
+    pub moderation_flagged: bool,
+    pub moderation_score: f32,
+    pub deepfake_probability: Option<f32>,
+    pub face_matches: Option<u32>,
+    pub shodan_vulns: Option<u32>,
+    pub shodan_open_ports: Option<u32>,
+}
+
 /// PERA cycle state from Kallisto-OSINTer
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InvestigationReport {

@@ -2,22 +2,12 @@ use anyhow::Result;
 use reqwest::Client;
 use tracing::{info, warn};
 
-use super::{RiskAssessment, RiskFactor};
+use super::{RiskAssessment, RiskFactor, RiskInputData};
 use crate::osint;
 
 /// Multi-source risk analysis aggregator
 /// Combines OSINT data from all available sources into a unified risk score
-pub fn calculate_comprehensive_risk(
-    breach_count: u32,
-    username_platforms_found: u32,
-    username_platforms_total: u32,
-    moderation_flagged: bool,
-    moderation_score: f32,
-    deepfake_probability: Option<f32>,
-    face_matches: Option<u32>,
-    shodan_vulns: Option<u32>,
-    shodan_open_ports: Option<u32>,
-) -> RiskAssessment {
+pub fn calculate_comprehensive_risk(input: RiskInputData) -> RiskAssessment {
     let mut factors = Vec::new();
     let mut total_score: f32 = 0.0;
     let mut factor_count: f32 = 0.0;
@@ -25,7 +15,7 @@ pub fn calculate_comprehensive_risk(
     // Breach data factor (0-100)
     // In dating safety context: breaches = proof of real, long-lived digital identity
     // Zero breaches is MORE suspicious (potentially fake/new identity)
-    let breach_score = match breach_count {
+    let breach_score = match input.breach_count {
         0 => 65.0,   // No breaches = suspicious, could be a fabricated identity
         1..=2 => 35.0,  // Minimal presence
         3..=5 => 15.0,  // Normal person, been online a while
@@ -35,12 +25,12 @@ pub fn calculate_comprehensive_risk(
     factors.push(RiskFactor {
         category: "digital_history".to_string(),
         score: breach_score,
-        description: if breach_count == 0 {
+        description: if input.breach_count == 0 {
             "No breach history found — could indicate a new or fabricated identity".to_string()
         } else {
             format!(
                 "Found in {} data breaches — confirms a real, established online presence",
-                breach_count
+                input.breach_count
             )
         },
         source: "HIBP + BreachDirectory".to_string(),
@@ -49,9 +39,9 @@ pub fn calculate_comprehensive_risk(
     factor_count += 1.0;
 
     // Digital footprint factor (0-100) — inverted: more platforms = lower risk
-    if username_platforms_total > 0 {
-        let presence_ratio = username_platforms_found as f32 / username_platforms_total as f32;
-        let footprint_score = match username_platforms_found {
+    if input.username_platforms_total > 0 {
+        let presence_ratio = input.username_platforms_found as f32 / input.username_platforms_total as f32;
+        let footprint_score = match input.username_platforms_found {
             0 => 85.0, // No presence = very suspicious
             1..=2 => 60.0,
             3..=5 => 30.0,
@@ -62,8 +52,8 @@ pub fn calculate_comprehensive_risk(
             score: footprint_score,
             description: format!(
                 "Found on {}/{} platforms ({:.0}% presence)",
-                username_platforms_found,
-                username_platforms_total,
+                input.username_platforms_found,
+                input.username_platforms_total,
                 presence_ratio * 100.0
             ),
             source: "Username Search".to_string(),
@@ -73,12 +63,12 @@ pub fn calculate_comprehensive_risk(
     }
 
     // Content moderation factor
-    if moderation_flagged || moderation_score > 0.1 {
-        let mod_score = (moderation_score * 100.0).min(100.0);
+    if input.moderation_flagged || input.moderation_score > 0.1 {
+        let mod_score = (input.moderation_score * 100.0).min(100.0);
         factors.push(RiskFactor {
             category: "content_safety".to_string(),
             score: mod_score,
-            description: if moderation_flagged {
+            description: if input.moderation_flagged {
                 "Conversation flagged for harmful content".to_string()
             } else {
                 format!("Content moderation score: {:.1}%", mod_score)
@@ -90,7 +80,7 @@ pub fn calculate_comprehensive_risk(
     }
 
     // Deepfake detection factor
-    if let Some(prob) = deepfake_probability {
+    if let Some(prob) = input.deepfake_probability {
         let df_score = (prob * 100.0).min(100.0);
         factors.push(RiskFactor {
             category: "photo_authenticity".to_string(),
@@ -106,7 +96,7 @@ pub fn calculate_comprehensive_risk(
     }
 
     // Face search factor
-    if let Some(matches) = face_matches {
+    if let Some(matches) = input.face_matches {
         let face_score = if matches == 0 {
             70.0 // No matches could mean stolen/unique photo — moderate risk
         } else if matches <= 3 {
@@ -125,7 +115,7 @@ pub fn calculate_comprehensive_risk(
     }
 
     // Network exposure factor
-    if let Some(vulns) = shodan_vulns {
+    if let Some(vulns) = input.shodan_vulns {
         if vulns > 0 {
             let vuln_score = ((vulns as f32) * 15.0).min(80.0);
             factors.push(RiskFactor {
@@ -134,7 +124,7 @@ pub fn calculate_comprehensive_risk(
                 description: format!(
                     "{} known vulnerabilities, {} open ports",
                     vulns,
-                    shodan_open_ports.unwrap_or(0)
+                    input.shodan_open_ports.unwrap_or(0)
                 ),
                 source: "Shodan".to_string(),
             });

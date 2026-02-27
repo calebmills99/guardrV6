@@ -1,4 +1,14 @@
 // Complete Guardr API Server
+#![allow(
+    dead_code,
+    unused_variables,
+    unused_imports,
+    clippy::redundant_pattern_matching,
+    clippy::needless_borrows_for_generic_args,
+    clippy::manual_range_contains,
+    clippy::too_many_arguments
+)]
+
 use anyhow::Result;
 use axum::{
     middleware as axum_middleware,

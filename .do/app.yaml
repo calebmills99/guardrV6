@@ -23,7 +23,7 @@ services:
     instance_count: 1
     
     health_check:
-      http_path: /api/health
+      http_path: /health
       initial_delay_seconds: 30
       period_seconds: 10
     

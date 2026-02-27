@@ -5,19 +5,34 @@ use tracing::{info, warn};
 use super::{RiskAssessment, RiskFactor};
 use crate::osint;
 
+/// Input parameters for comprehensive risk calculation
+#[derive(Debug, Clone)]
+pub struct ComprehensiveRiskInput {
+    pub breach_count: u32,
+    pub username_platforms_found: u32,
+    pub username_platforms_total: u32,
+    pub moderation_flagged: bool,
+    pub moderation_score: f32,
+    pub deepfake_probability: Option<f32>,
+    pub face_matches: Option<u32>,
+    pub shodan_vulns: Option<u32>,
+    pub shodan_open_ports: Option<u32>,
+}
+
 /// Multi-source risk analysis aggregator
 /// Combines OSINT data from all available sources into a unified risk score
-pub fn calculate_comprehensive_risk(
-    breach_count: u32,
-    username_platforms_found: u32,
-    username_platforms_total: u32,
-    moderation_flagged: bool,
-    moderation_score: f32,
-    deepfake_probability: Option<f32>,
-    face_matches: Option<u32>,
-    shodan_vulns: Option<u32>,
-    shodan_open_ports: Option<u32>,
-) -> RiskAssessment {
+pub fn calculate_comprehensive_risk(input: ComprehensiveRiskInput) -> RiskAssessment {
+    let ComprehensiveRiskInput {
+        breach_count,
+        username_platforms_found,
+        username_platforms_total,
+        moderation_flagged,
+        moderation_score,
+        deepfake_probability,
+        face_matches,
+        shodan_vulns,
+        shodan_open_ports,
+    } = input;
     let mut factors = Vec::new();
     let mut total_score: f32 = 0.0;
     let mut factor_count: f32 = 0.0;

@@ -91,12 +91,13 @@ async fn main() -> Result<()> {
 }
 
 fn build_app_router(state: AppState) -> Router {
-    // Create the main API router (nested under /api for DO App Platform routing)
+    // Create the main API router
+    // DO App Platform routes /api/* to this service and strips the prefix, so we serve at /health, /check, etc.
     let api_router = api::create_router();
 
     // Build the complete application with middleware
     Router::new()
-        .nest("/api", api_router)
+        .merge(api_router)
         // Add global middleware (order matters - first added = outermost layer)
         .layer(axum_middleware::from_fn(gdpr_compliance_middleware))
         .layer(axum_middleware::from_fn(security_headers_middleware))

@@ -145,13 +145,13 @@ export default function About() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col md:flex-row items-center gap-10">
-              <div className="w-48 h-48 lg:w-56 lg:h-56 rounded-2xl overflow-hidden flex-shrink-0 shadow-glow-primary">
+              <div className="relative w-48 h-48 lg:w-56 lg:h-56 rounded-2xl overflow-hidden flex-shrink-0 shadow-glow-primary">
                 <Image
                   src="/images/founder.png"
                   alt="Caleb Mills - Founder of Guardr"
-                  width={224}
-                  height={224}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 224px, 192px"
+                  className="object-cover"
                 />
               </div>
               <div>
@@ -181,13 +181,13 @@ export default function About() {
       <section className="py-20 lg:py-28">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="w-48 h-48 lg:w-64 lg:h-64 rounded-3xl overflow-hidden mx-auto mb-8 shadow-glow-primary-lg">
+            <div className="relative w-48 h-48 lg:w-64 lg:h-64 rounded-3xl overflow-hidden mx-auto mb-8 shadow-glow-primary-lg">
               <Image
                 src="/images/midnight.png"
                 alt="Midnight - Guardr's protective mascot dog wearing a rainbow pride collar with a G tag"
-                width={256}
-                height={256}
-                className="w-full h-full object-cover"
+                fill
+                sizes="(min-width: 1024px) 256px, 192px"
+                className="object-cover"
                 priority
               />
             </div>

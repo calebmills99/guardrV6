@@ -1,4 +1,3 @@
-use anyhow::Result;
 use reqwest::Client;
 use std::time::Duration;
 use tracing::{info, debug};
@@ -213,7 +212,7 @@ async fn check_platform(
                 }
             } else {
                 // 3xx redirects likely mean profile exists
-                status >= 200 && status < 400
+                (200..400).contains(&status)
             };
 
             debug!("{}: {} (status {})", platform, if found { "FOUND" } else { "NOT FOUND" }, status);

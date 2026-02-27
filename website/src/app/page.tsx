@@ -44,6 +44,8 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [demoName, setDemoName] = useState('');
   const [demoLocation, setDemoLocation] = useState('');
+  const [demoEmail, setDemoEmail] = useState('');
+  const [demoUsername, setDemoUsername] = useState('');
   const [demoResults, setDemoResults] = useState<DemoResult | null>(null);
   const [demoLoading, setDemoLoading] = useState(false);
 
@@ -170,7 +172,7 @@ export default function Home() {
     setDemoLoading(true);
     setDemoResults(null); // Clear previous results
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
       const response = await fetch(`${apiUrl}/check`, {
         method: 'POST',
@@ -179,7 +181,9 @@ export default function Home() {
         },
         body: JSON.stringify({
           name: demoName,
-          location: demoLocation || undefined
+          location: demoLocation || undefined,
+          email: demoEmail.trim() || undefined,
+          username: demoUsername.trim() || undefined,
         }),
       });
 
@@ -309,6 +313,20 @@ export default function Home() {
                   placeholder="Location (optional, e.g. Austin, TX)"
                   value={demoLocation}
                   onChange={(e) => setDemoLocation(e.target.value)}
+                  className="w-full"
+                />
+                <Input
+                  type="email"
+                  placeholder="Email (optional - enables breach check)"
+                  value={demoEmail}
+                  onChange={(e) => setDemoEmail(e.target.value)}
+                  className="w-full"
+                />
+                <Input
+                  type="text"
+                  placeholder="Username (optional - enables social lookup)"
+                  value={demoUsername}
+                  onChange={(e) => setDemoUsername(e.target.value)}
                   className="w-full"
                 />
                 <Button

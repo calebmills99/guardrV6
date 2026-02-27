@@ -45,7 +45,7 @@ pub fn create_router() -> Router<crate::state::AppState> {
         .route("/", get(root_info))
 
         // Public demo endpoint (no auth required)
-        // Note: Ingress strips /api prefix, so /api/check becomes /check
+        // Mounted at /api via api_server, so full path is /api/check
         .route("/check", post(demo_check))
 
         // Authentication routes (no auth required)

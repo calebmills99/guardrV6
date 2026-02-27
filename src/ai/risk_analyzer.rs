@@ -3,10 +3,10 @@ use reqwest::Client;
 use tracing::{info, warn};
 
 use super::{RiskAssessment, RiskFactor};
-use crate::osint;
 
 /// Multi-source risk analysis aggregator
 /// Combines OSINT data from all available sources into a unified risk score
+#[allow(clippy::too_many_arguments)]
 pub fn calculate_comprehensive_risk(
     breach_count: u32,
     username_platforms_found: u32,

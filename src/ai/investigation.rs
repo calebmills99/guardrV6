@@ -332,15 +332,15 @@ async fn build_risk_from_findings(
                 .map(|a| a.len() as u32)
         });
 
-    risk_analyzer::calculate_comprehensive_risk(
+    risk_analyzer::calculate_comprehensive_risk(crate::ai::RiskInputData {
         breach_count,
-        username_found,
-        username_total,
-        mod_flagged,
-        mod_score,
-        deepfake_prob,
+        username_platforms_found: username_found,
+        username_platforms_total: username_total,
+        moderation_flagged: mod_flagged,
+        moderation_score: mod_score,
+        deepfake_probability: deepfake_prob,
         face_matches,
         shodan_vulns,
-        shodan_ports,
-    )
+        shodan_open_ports: shodan_ports,
+    })
 }

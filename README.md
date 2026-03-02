@@ -73,7 +73,7 @@ Guardr is a comprehensive dating safety platform that uses advanced AI and machi
 - **Node.js** 18+ and npm (for website)
 - **SQLite** (for database)
 - **Redis** (optional, for caching)
-- API keys for external services (HIBP, Leak Lookup, Intelligence X, Google Gemini AI)
+- Optional API keys for external services (see `.env.example` for full list)
 
 ### Installation
 
@@ -83,15 +83,16 @@ Guardr is a comprehensive dating safety platform that uses advanced AI and machi
    cd guardrV6
    ```
 
-2. **Set up API keys**
-   
-   Create a `.env` file in the root directory or add your keys to `~/.apikeys.zsh`:
+2. **Set up environment variables**
+
+   Copy the provided template and fill in values:
    ```bash
-   export HIBP_API_KEY="your_hibp_key"
-   export LEAK_LOOKUP_KEY="your_leak_lookup_key"
-   export INTELX_API_KEY="your_intelx_key"
-   export GEMINI_API_KEY="your_gemini_ai_key"
+   cp .env.example .env
    ```
+
+   At minimum, set secure values for:
+   - `JWT_SECRET` (at least 32 chars)
+   - `ENCRYPTION_KEY` (exactly 32 chars)
 
 3. **Build the Rust backend**
    ```bash
@@ -407,32 +408,29 @@ npm run dev
 
 ### Environment Variables
 
-Create a `.env` file:
+Use the repo template as the source of truth:
 
 ```bash
-# Database
-DATABASE_URL=sqlite://guardr.db
-
-# Redis (optional)
-REDIS_URL=redis://localhost:6379
-
-# API Keys
-HIBP_API_KEY=your_key_here
-LEAK_LOOKUP_KEY=your_key_here
-INTELX_API_KEY=your_key_here
-GEMINI_API_KEY=your_key_here
-
-# Server Configuration
-SERVER_HOST=0.0.0.0
-SERVER_PORT=5000
-JWT_SECRET=your_jwt_secret_here
-
-# CORS (for development)
-CORS_ALLOWED_ORIGINS=http://localhost:3000
-
-# Logging
-RUST_LOG=info
+cp .env.example .env
 ```
+
+Minimum required secrets for secure API startup:
+
+- `JWT_SECRET` (at least 32 chars)
+- `ENCRYPTION_KEY` (exactly 32 chars)
+
+Critical runtime config:
+
+```bash
+DATABASE_URL=sqlite:./data/guardr.db?mode=rwc
+REDIS_URL=redis://127.0.0.1:6379
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+
+All optional OSINT/AI keys and deployment tokens are listed in:
+
+- `.env.example`
+- `docs/DEBUG_PLAN.md`
 
 ---
 

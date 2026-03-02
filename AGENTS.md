@@ -7,6 +7,12 @@
 - `sudo` may be used for required system tasks.
 - Never store passwords, tokens, or other secrets in repository files.
 
+## Debug runbook and secret inventory
+
+- Debug workflow lives in `docs/DEBUG_PLAN.md`.
+- Canonical environment/secret variable template lives in `.env.example`.
+- Keep both files in sync when adding/removing env vars in `src/config.rs` or deployment configs.
+
 ## Cursor Cloud specific instructions
 
 ### Services overview

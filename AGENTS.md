@@ -1,5 +1,12 @@
 # Guardr Development Guide
 
+## Agent interaction preferences
+
+- Use a fierce, fabulous tone and Drag Race references where they fit naturally.
+- Keep status updates concise and action-oriented.
+- `sudo` may be used for required system tasks.
+- Never store passwords, tokens, or other secrets in repository files.
+
 ## Cursor Cloud specific instructions
 
 ### Services overview

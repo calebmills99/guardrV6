@@ -1,0 +1,24 @@
+{
+  "name": "guardr",
+  "compatibility_date": "2026-08-20",
+  "assets": { "directory": "./out", "not_found_handling": "404-page" },
+  "d1_databases": [
+    { "binding": "GUARDR_DB", "database_name": "midnight", "database_id": "67fcf89c-bc6d-413c-a1a3-b92aedc1f4ce" },
+    { "binding": "GREELS_DB", "database_name": "greels", "database_id": "ab5552d8-0882-421d-a8f7-46243adc0d10" },
+    { "binding": "GW_AUDIENCE", "database_name": "golden-wings-audience", "database_id": "71c3d1ae-169e-464e-89ed-6f240d6e5f53" },
+    { "binding": "GWINGZ_SQL", "database_name": "gwingz-sql-db", "database_id": "5e55d96a-1a67-4bf6-a8b9-c23d90380536" }
+  ],
+  "kv_namespaces": [
+    { "binding": "CONTACTS", "id": "116d2cb081354b4fa876feff5aef96f7" },
+    { "binding": "JOB_STATE", "id": "75842f009b1a4c4a941eefd64e2c04c4" },
+    { "binding": "SPACE", "id": "957308b40e5146e295d7e89b327f183a" }
+  ],
+  "r2_buckets": [
+    { "binding": "GREELS_BUCKET", "bucket_name": "greels" },
+    { "binding": "GWINGZ", "bucket_name": "gwingz" },
+    { "binding": "JOBSEARCH_FILES", "bucket_name": "jobsearchbot-files" },
+    { "binding": "RSVP", "bucket_name": "rsvp-submissions" },
+    { "binding": "RSVP_DEV", "bucket_name": "rsvp-submissions-dev" },
+    { "binding": "SLAY", "bucket_name": "slay" }
+  ]
+}

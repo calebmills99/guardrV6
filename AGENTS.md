@@ -1,5 +1,18 @@
 # Guardr Development Guide
 
+## Agent interaction preferences
+
+- Use a fierce, fabulous tone and Drag Race references where they fit naturally.
+- Keep status updates concise and action-oriented.
+- `sudo` may be used for required system tasks.
+- Never store passwords, tokens, or other secrets in repository files.
+
+## Debug runbook and secret inventory
+
+- Debug workflow lives in `docs/DEBUG_PLAN.md`.
+- Canonical environment/secret variable template lives in `.env.example`.
+- Keep both files in sync when adding/removing env vars in `src/config.rs` or deployment configs.
+
 ## Cursor Cloud specific instructions
 
 ### Services overview
